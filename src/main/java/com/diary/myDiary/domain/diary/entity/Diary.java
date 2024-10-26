@@ -28,4 +28,11 @@ public class Diary extends BaseTimeEntity {
     @Column(name = "emotion_tag", length = 50)
     private String emotionTag; // 감정 태그
 
+    public static Diary from(String content, String emotionTag, Member member) {
+        return Diary.builder()
+                .content(content)
+                .emotionTag(emotionTag)
+                .member(member)
+                .build();
+    }
 }

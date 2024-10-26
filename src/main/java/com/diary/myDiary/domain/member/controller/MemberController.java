@@ -4,7 +4,6 @@ package com.diary.myDiary.domain.member.controller;
 import com.diary.myDiary.domain.member.dto.*;
 import com.diary.myDiary.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,8 +72,7 @@ public class MemberController {
      */
     @GetMapping
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회합니다.")
-    public ResponseEntity<MemberInfoDTO> getMyInfo(HttpServletResponse response) throws Exception {
-
+    public ResponseEntity<MemberInfoDTO> getMyInfo() throws Exception {
         MemberInfoDTO myInfo = memberService.getMyInfo();
         return ResponseEntity.ok(myInfo);
     }

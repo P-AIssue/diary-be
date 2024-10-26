@@ -22,7 +22,7 @@ public class DiaryController {
      * 일기작성
      */
     @PostMapping
-    @Operation(summary = "일기 작성", description = "일기를 작성합니다.")
+    @Operation(summary = "일기 작성", description = "일기를 작성합니다..")
     public ResponseEntity<DiaryResponse> writeDiary(@Valid @RequestBody DiaryRequest diaryRequest) {
         return ResponseEntity.ok(diaryService.create(diaryRequest.content(), diaryRequest.emotionTag()));
     }

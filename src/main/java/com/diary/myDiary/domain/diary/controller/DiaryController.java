@@ -18,7 +18,7 @@ public class DiaryController {
     /**
      * 일기작성
      */
-    @PostMapping
+    @PostMapping("/write")
     @Operation(summary = "일기 작성", description = "일기를 작성합니다.")
     @ResponseStatus(HttpStatus.OK)
     public void writeDiary(@Valid @RequestBody WriteDTO writeDTO) throws Exception {
@@ -28,7 +28,7 @@ public class DiaryController {
     /**
      * 일기삭제
      */
-    @DeleteMapping
+    @DeleteMapping("/delete")
     @Operation(summary = "일기 삭제", description = "일기를 삭제합니다.")
     @ResponseStatus(HttpStatus.OK)
     public void deleteDiary() throws Exception {
@@ -37,7 +37,7 @@ public class DiaryController {
     /**
      *  일기조회
      */
-    @GetMapping
+    @GetMapping("/{id}")
     @Operation(summary = "일기 조회", description = "일기를 조회합니다.")
     @ResponseStatus(HttpStatus.OK)
     public void getDiary() throws Exception {}

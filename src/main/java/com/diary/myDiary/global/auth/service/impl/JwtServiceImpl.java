@@ -2,8 +2,11 @@ package com.diary.myDiary.global.auth.service.impl;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.diary.myDiary.domain.member.entity.Member;
+import com.diary.myDiary.domain.member.exception.MemberException;
 import com.diary.myDiary.domain.member.repository.MemberRepository;
 import com.diary.myDiary.global.auth.service.JwtService;
+import com.diary.myDiary.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -63,7 +66,7 @@ public class JwtServiceImpl implements JwtService {
         memberRepository.findByUsername(username)
                 .ifPresentOrElse(
                         member -> member.updateRefreshToken(refreshToken),
-                        () -> new Exception("회원이 없습니다.")
+                        () -> { throw new MemberException(ErrorCode.NOT_FOUND_MEMBER); }
                 );
     }
 
@@ -71,8 +74,8 @@ public class JwtServiceImpl implements JwtService {
     public void destroyRefreshToken(String username) {
         memberRepository.findByUsername(username)
                 .ifPresentOrElse(
-                        member -> member.destroyRefreshToken(),
-                        () -> new Exception("회원이 없습니다")
+                        Member::destroyRefreshToken,
+                        () -> { throw new MemberException(ErrorCode.NOT_FOUND_MEMBER); }
                 );
     }
 

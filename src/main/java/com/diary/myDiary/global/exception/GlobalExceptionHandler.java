@@ -22,7 +22,6 @@ public class GlobalExceptionHandler {
         return getErrorResponse(errorCode);
     }
 
-
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(TokenExpiredException.class)
     public ErrorResponseV0 handleTokenExpiredException(TokenExpiredException exception) {

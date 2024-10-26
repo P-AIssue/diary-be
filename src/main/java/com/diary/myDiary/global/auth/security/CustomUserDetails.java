@@ -13,7 +13,6 @@ public class CustomUserDetails implements UserDetails {
 
     private final Member member;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();

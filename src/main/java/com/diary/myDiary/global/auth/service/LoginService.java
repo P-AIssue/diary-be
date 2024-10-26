@@ -17,10 +17,9 @@ public class LoginService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByUsername(username).orElseThrow();
+        Member member = memberRepository.getByUsernameOrThrow(username);
 
         return User.builder().username(member.getUsername())
                 .password(member.getPassword())

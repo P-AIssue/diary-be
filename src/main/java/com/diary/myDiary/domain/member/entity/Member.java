@@ -52,7 +52,6 @@ public class Member extends BaseTimeEntity {
     @Column(length = 1000)
     private String refreshToken; //리프레시토큰
 
-
     //== 정보 수정 ==//
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
@@ -62,7 +61,8 @@ public class Member extends BaseTimeEntity {
         this.name = name;
     }
 
-    public void updateNickName(String nickName) {this.nickName = nickName;
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public void updateAge(Integer age) {

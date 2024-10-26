@@ -22,9 +22,9 @@ public class EmotionAnalysis extends BaseTimeEntity {
     // diary_id  1:1 관계 매핑
     @OneToOne
     @JoinColumn(name = "diary_id", nullable = false)
-    private Diary diary; // Diary 작성자
+    private Diary diary;
 
     // emotion_result
     @Column(name = "emotion_result", nullable = false)
-    private String analysisResult; // emotion_result
+    private String analysisResult;
 }

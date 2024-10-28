@@ -42,10 +42,8 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
 
-
     @Value("${cors.allowed-origins:http://localhost:3000}")
     private List<String> allowOriginList;
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -60,14 +58,10 @@ public class SecurityConfig {
         return source;
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
-
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -88,11 +82,6 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
-
-
-
-
-
         //세션 설정 STATELESS
         http
                 .sessionManagement((session) -> session
@@ -135,10 +124,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-
-        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
-
-        return jsonUsernamePasswordLoginFilter;
+        return new JwtAuthenticationProcessingFilter(jwtService, memberRepository);
     }
 
 }

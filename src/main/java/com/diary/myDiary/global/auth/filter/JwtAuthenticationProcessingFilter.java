@@ -32,10 +32,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private final MemberRepository memberRepository;
 
-    private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
+    private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
     //사용자에게 부여될 권한을 다른 권한으로 매핑 / 아무런 변경 없이 입력받은 권한은 그대로 반환 = 매핑할 필요가 없다.
 
-    private final String NO_CHECK_URL = "/login";
+    private static final String NO_CHECK_URL = "/login";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -51,7 +51,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .orElse(null); //2
 
         if (refreshToken != null) {
-            checkRefreshToeknAndReIssueAccessToken(response, refreshToken);
+            checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
             return;
         }
 
@@ -59,16 +59,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     private void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        jwtService.extractAccessToken(request).filter(jwtService::isTokenValid).ifPresent(
-
-                accessToken -> jwtService.extractUsername(accessToken).ifPresent(
-
-                        username -> memberRepository.findByUsername(username).ifPresent(
-
-                                member -> saveAuthentication(member)
-                        )
-                )
-        );
+        jwtService.extractAccessToken(request)
+                .filter(jwtService::isTokenValid)
+                .flatMap(accessToken -> jwtService.extractUsername(accessToken)
+                        .flatMap(memberRepository::findByUsername))
+                .ifPresent(this::saveAuthentication);
 
         filterChain.doFilter(request, response);
     }
@@ -87,7 +82,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         SecurityContextHolder.setContext(context);
     }
 
-    private void checkRefreshToeknAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
+    private void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
 
         memberRepository.findByRefreshToken(refreshToken).ifPresent(
                 member -> jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getUsername()))

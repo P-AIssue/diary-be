@@ -26,11 +26,9 @@ public record MemberSignUpDTO(
         @Size(min = 2, message = "닉네임이 너무 짧습니다.")
         @NotBlank String nickName,
 
-
         @NotNull(message = "나이를 입력해주세요")
         @Range(min = 0, max = 150)
         Integer age) {
-
 
     public Member toEntity() {
         return Member.builder()

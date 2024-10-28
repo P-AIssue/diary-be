@@ -11,7 +11,8 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(00, "사용자를 찾을 수 없습니다."),
     MISMATCH_PASSWORD(00, "비밀번호가 일치하지 않습니다."),
 
-
+    /* 다이어리 */
+    NOT_FOUND_DIARY(00, "다이어리를 찾을 수 없습니다."),
 
     /* 공용 */
     NOT_FOUND_ACCESS_TOKEN(00, "토큰을 찾을 수 없습니다."),

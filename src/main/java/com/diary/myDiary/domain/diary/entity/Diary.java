@@ -35,4 +35,12 @@ public class Diary extends BaseTimeEntity {
                 .member(member)
                 .build();
     }
+
+    @Column(nullable = false)
+    private String imageUrl;
+
+    //메서드명 추천점..
+    public void url(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

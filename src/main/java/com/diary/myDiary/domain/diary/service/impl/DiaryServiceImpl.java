@@ -32,12 +32,11 @@ public class DiaryServiceImpl implements DiaryService {
     public DiaryResponse create(String content, String emotion) {
         Member member = memberRepository.getByUsernameOrThrow(SecurityUtil.getLoginUsername());
 
-        Diary diary = Diary.from(content, emotion, member);
-        diaryRepository.save(diary);
-
         Map<String, Object> imageResult = chatGPTService.generateImageFromDiary(content);
 
         String imageUrl = extractImageUrl(imageResult);
+
+        Diary diary = Diary.from(content, emotion, member);
 
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
@@ -46,6 +45,8 @@ public class DiaryServiceImpl implements DiaryService {
         } else {
             log.error("이미지 생성에 실패하였습니다. 일기 ID: " + diary.getId());
         }
+
+        diaryRepository.save(diary);
 
         return DiaryResponse.of(diary);
     }

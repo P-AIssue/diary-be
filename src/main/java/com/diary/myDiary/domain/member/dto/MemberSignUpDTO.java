@@ -1,5 +1,6 @@
 package com.diary.myDiary.domain.member.dto;
 
+import com.diary.myDiary.domain.member.entity.Gender;
 import com.diary.myDiary.domain.member.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,11 +25,17 @@ public record MemberSignUpDTO(
 
         @NotBlank(message = "닉네임을 입력해주세요.")
         @Size(min = 2, message = "닉네임이 너무 짧습니다.")
-        @NotBlank String nickName,
+        @NotBlank
+        String nickName,
 
         @NotNull(message = "나이를 입력해주세요")
         @Range(min = 0, max = 150)
-        Integer age) {
+        Integer age,
+
+        @NotNull(message = "성별을 선택해주세요")
+        Gender gender
+
+        ) {
 
     public Member toEntity() {
         return Member.builder()
@@ -37,6 +44,7 @@ public record MemberSignUpDTO(
                 .name(name)
                 .nickName(nickName)
                 .age(age)
+                .gender(gender)
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.diary.myDiary.domain.gpt.service.impl;
 import com.diary.myDiary.domain.gpt.config.ChatGPTConfig;
 import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
+import com.diary.myDiary.domain.gpt.dto.ImageGenerationRequestDTO;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -167,4 +167,42 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         }
         return resultMap;
     }
+
+    @Override
+    public Map<String, Object> generateImageFromDiary(String diaryContent) {
+        log.debug("[+] 일기 내용을 기반으로 이미지를 생성합니다.");
+
+        // 헤더 설정
+        HttpHeaders headers = chatGPTConfig.httpHeaders();
+
+        // 이미지 생성 API 엔드포인트
+        String imageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
+
+        // 이미지 생성 요청 DTO 생성
+        ImageGenerationRequestDTO requestDto = ImageGenerationRequestDTO.builder()
+                .prompt(diaryContent)
+                .n(1) // 생성할 이미지 수
+                .size("1024x1024") // 이미지 크기
+                .build();
+
+        // 요청 엔티티 생성
+        HttpEntity<ImageGenerationRequestDTO> requestEntity = new HttpEntity<>(requestDto, headers);
+
+        // API 호출
+        ResponseEntity<String> response = chatGPTConfig
+                .restTemplate()
+                .exchange(imageGenerationUrl, HttpMethod.POST, requestEntity, String.class);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            // 응답을 Map으로 변환
+            resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            log.error("JsonProcessingException :: " + e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("RuntimeException :: " + e.getMessage());
+        }
+        return resultMap;
+    }
+
 }

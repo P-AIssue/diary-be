@@ -19,4 +19,9 @@ public interface ChatGPTService {
 
     // 최신 모델 요청
     Map<String, Object> prompt(ChatCompletionDTO chatCompletionDto);
+
+    /**
+     * 일기 내용을 기반으로 이미지 생성
+     */
+    Map<String, Object> generateImageFromDiary(String diaryContent);
 }

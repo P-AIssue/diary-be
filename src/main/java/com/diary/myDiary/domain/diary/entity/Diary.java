@@ -36,7 +36,7 @@ public class Diary extends BaseTimeEntity {
                 .build();
     }
 
-    @Column(nullable = false)
+    @Column(name= "image_url", length = 1000, nullable = true)
     private String imageUrl;
 
     //메서드명 추천점..

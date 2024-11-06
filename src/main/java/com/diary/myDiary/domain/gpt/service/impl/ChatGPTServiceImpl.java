@@ -1,8 +1,11 @@
 package com.diary.myDiary.domain.gpt.service.impl;
 
+import com.diary.myDiary.domain.diary.entity.Diary;
+import com.diary.myDiary.domain.diary.repository.DiaryRepository;
 import com.diary.myDiary.domain.gpt.config.ChatGPTConfig;
 import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
+import com.diary.myDiary.domain.gpt.dto.EmotionAnalyzeDTO;
 import com.diary.myDiary.domain.gpt.dto.ImageGenerationRequestDTO;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ChatGPTServiceImpl implements ChatGPTService {
 
+    private final DiaryRepository diaryRepository;
     private final ChatGPTConfig chatGPTConfig;
     private final ObjectMapper objectMapper;
 
@@ -205,4 +210,37 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         return resultMap;
     }
 
+    @Override
+    public Map<String, Object> analyzeEmotion(Long diaryId) {
+
+        Diary diary = diaryRepository.getByIdOrThrow(diaryId);
+        String diaryContent = diary.getContent();
+
+        HttpHeaders headers = chatGPTConfig.httpHeaders();
+
+        // 메시지 구성
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of(
+                "role", "user",
+                "content", "다음 텍스트의 감정을 분석해 주세요: \"" + diaryContent + "\"\n감정 상태를 한 줄로 표현해 주세요."
+        ));
+
+        EmotionAnalyzeDTO emotionAnalyzeDto = EmotionAnalyzeDTO.builder()
+                .messages(messages)
+                .build();
+
+        HttpEntity<EmotionAnalyzeDTO> requestEntity = new HttpEntity<>(emotionAnalyzeDto, headers);
+
+        ResponseEntity<String> response = chatGPTConfig
+                .restTemplate()
+                .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
+
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            log.error("JsonProcessingException :: " + e.getMessage());
+        }
+        return resultMap; // 분석 결과 반환
+    }
 }

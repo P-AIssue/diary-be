@@ -1,8 +1,6 @@
 package com.diary.myDiary.domain.gpt.controller;
 
-
-import com.diary.myDiary.domain.diary.dto.DiaryContentDTO;
-import com.diary.myDiary.domain.diary.dto.DiaryResponse;
+import com.diary.myDiary.domain.gpt.dto.AnalyzeEmotionRequest;
 import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.ResponseVO;
@@ -69,6 +67,16 @@ public class ChatGPTController {
     public ResponseVO<Map<String, Object>> generateImage(@RequestBody String diaryContent) {
         log.debug("Diary content :: " + diaryContent);
         Map<String, Object> result = chatGPTService.generateImageFromDiary(diaryContent);
+        return new ResponseVO<>(result);
+    }
+
+    /**
+     * 일기 내용을 기반으로 감정 분석
+     */
+    @PostMapping("/analyzeEmotion")
+    public ResponseVO<Map<String, Object>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
+        Long diaryId = emotionRequest.diaryId();
+        Map<String, Object> result = chatGPTService.analyzeEmotion(diaryId);
         return new ResponseVO<>(result);
     }
 }

@@ -3,6 +3,9 @@ package com.diary.myDiary.domain.notification.repository;
 import com.diary.myDiary.domain.notification.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+import java.util.List;
 
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
+    // Member의 ID를 기준으로 Notification 리스트 조회
+    List<Notification> findByMemberId(Long memberId);
 }

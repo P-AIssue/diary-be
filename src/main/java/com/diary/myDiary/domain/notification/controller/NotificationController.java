@@ -1,8 +1,12 @@
 package com.diary.myDiary.domain.notification.controller;
 
+import com.diary.myDiary.domain.notification.dto.NotificationDto;
 import com.diary.myDiary.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -11,29 +15,42 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    // 알림 보내기
     @PostMapping("/send")
     @ResponseBody
-    public void sendNotification(Long memberId, String message) {
-        notificationService.sendNotification(memberId, message);
+    public void sendNotification(@RequestBody NotificationDto notificationDto) {
+        notificationService.sendNotification(notificationDto);
     }
 
-    @GetMapping("/read/{id}")
+    // 알림 리스트
+    @GetMapping("/list")
+    public List<NotificationDto> getNotification(@RequestParam Long memberId) {
+        return notificationService.getNotification(memberId);
+    }
+
+    // 알림 읽기 및 감정분석결과 확인하기
+    @GetMapping("/read/{notificationId}")
     @ResponseBody
-    public void readNotification(Long notificationId) {
-        notificationService.readNotification(notificationId);
+    public RedirectView readNotification(@PathVariable Long notificationId) {
+        String redirectUrl = notificationService.readNotification(notificationId);
+        return new RedirectView(redirectUrl);
     }
 
+    // 모두 읽음 처리 하기
     @GetMapping("/read-all")
     @ResponseBody
     public void readAllNotification(Long memberId) {
         notificationService.readAllNotification(memberId);
     }
 
-    @PostMapping("/delete")
+    // 알림 일부 삭제
+    @PostMapping("/delete/{notificationId}")
     @ResponseBody
-    public void deleteNotification(Long notificationId) {
+    public void deleteNotification(@PathVariable Long notificationId) {
         notificationService.deleteNotification(notificationId);
     }
+
+    // 알림 모두 삭제
     @PostMapping("/delete-all")
     @ResponseBody
     public void deleteAllNotification(Long memberId) {

@@ -4,6 +4,7 @@ import com.diary.myDiary.domain.member.entity.Member;
 import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -18,18 +19,31 @@ public class Notification extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
-    private Long id;
+    private Long notificationId;
 
     // Member 와 1 : n 관계 매핑
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 알림 type 고정 값 사용
+    // 알림 type 고정 값 사용 (아이콘)
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
-    // message
+    // 메시지
     @Column(nullable = false)
     private String message;
+
+    // 읽음을 확인 (y, n)
+    @Column(nullable = false)
+    private Boolean is_read;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    // 읽음 처리
+    public void setIs_read(boolean is_read) {
+        this.is_read = is_read;
+    }
 }

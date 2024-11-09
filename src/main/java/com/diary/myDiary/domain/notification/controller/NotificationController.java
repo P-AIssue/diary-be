@@ -17,7 +17,6 @@ public class NotificationController {
 
     // 알림 보내기
     @PostMapping("/send")
-    @ResponseBody
     public void sendNotification(@RequestBody NotificationDto notificationDto) {
         notificationService.sendNotification(notificationDto);
     }
@@ -29,25 +28,23 @@ public class NotificationController {
     }
 
     // 알림 읽기 및 감정분석결과 확인하기
-    @GetMapping("/read/{notificationId}")
-    @ResponseBody
-    public RedirectView readNotification(@PathVariable Long notificationId) {
-        String redirectUrl = notificationService.readNotification(notificationId);
+    @GetMapping("/read/{id}")
+    public RedirectView readNotification(@PathVariable Long id) {
+        String redirectUrl = notificationService.readNotification(id);
         return new RedirectView(redirectUrl);
     }
 
     // 모두 읽음 처리 하기
     @GetMapping("/read-all")
-    @ResponseBody
     public void readAllNotification(Long memberId) {
         notificationService.readAllNotification(memberId);
     }
 
     // 알림 일부 삭제
-    @PostMapping("/delete/{notificationId}")
+    @PostMapping("/delete/{id}")
     @ResponseBody
-    public void deleteNotification(@PathVariable Long notificationId) {
-        notificationService.deleteNotification(notificationId);
+    public void deleteNotification(@PathVariable Long id) {
+        notificationService.deleteNotification(id);
     }
 
     // 알림 모두 삭제

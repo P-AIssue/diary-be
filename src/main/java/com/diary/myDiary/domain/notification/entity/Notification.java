@@ -19,7 +19,7 @@ public class Notification extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
-    private Long notificationId;
+    private Long Id;
 
     // Member 와 1 : n 관계 매핑
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,16 +34,13 @@ public class Notification extends BaseTimeEntity {
     @Column(nullable = false)
     private String message;
 
-    // 읽음을 확인 (y, n)
+    // 읽음을 확인 (true, false)
     @Column(nullable = false)
-    private Boolean is_read;
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private Boolean isRead;
+    
 
     // 읽음 처리
     public void setIs_read(boolean is_read) {
-        this.is_read = is_read;
+        this.isRead = isRead;
     }
 }

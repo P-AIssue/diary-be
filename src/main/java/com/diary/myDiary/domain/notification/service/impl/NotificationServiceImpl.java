@@ -23,6 +23,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // 알림 보내기
     @Override
+    @Transactional
     public void sendNotification(NotificationDto notificationDto) {
         Member member = memberRepository.findById(notificationDto.getMemberId())
                 .orElseThrow(() -> new RuntimeException("멤버 없음"));
@@ -31,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .member(member)
                 .notificationType(NotificationType.EMOTION_ANALYSIS)
                 .message(notificationDto.getMessage())
-                .is_read(false)
+                .isRead(false)
                 .build();
 
         notificationRepository.save(notification);
@@ -45,11 +46,12 @@ public class NotificationServiceImpl implements NotificationService {
         List<NotificationDto> notificationDtos = new ArrayList<>();
         for (Notification notification : notifications) {
             NotificationDto dto = new NotificationDto(
-                    notification.getNotificationId(),
+                    notification.getId(),
+                    notification.getMember().getId(),
                     notification.getMessage(),
                     notification.getNotificationType(),
-                    notification.getIs_read(),
-                    notification.getCreatedAt()
+                    notification.getIsRead(),
+                    notification.getCreatedDate()
             );
             notificationDtos.add(dto);
         }

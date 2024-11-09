@@ -4,9 +4,6 @@ import com.diary.myDiary.domain.member.entity.Member;
 import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -35,12 +32,17 @@ public class Notification extends BaseTimeEntity {
     private String message;
 
     // 읽음을 확인 (true, false)
+    @Setter
     @Column(nullable = false)
     private Boolean isRead;
-    
 
-    // 읽음 처리
-    public void setIs_read(boolean is_read) {
-        this.isRead = isRead;
+
+    public static Notification from(Member member, NotificationType notificationType, String message, Boolean isRead) {
+        return Notification.builder()
+                .member(member)
+                .notificationType(notificationType)
+                .message(message)
+                .isRead(isRead)
+                .build();
     }
 }

@@ -1,10 +1,10 @@
 package com.diary.myDiary.domain.notification.controller;
 
-import com.diary.myDiary.domain.notification.dto.NotificationDto;
+import com.diary.myDiary.domain.notification.dto.NotificationResponse;
 import com.diary.myDiary.domain.notification.service.NotificationService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 
@@ -17,39 +17,42 @@ public class NotificationController {
 
     // 알림 보내기
     @PostMapping("/send")
-    public void sendNotification(@RequestBody NotificationDto notificationDto) {
-        notificationService.sendNotification(notificationDto);
+    @Operation(summary = "알림 생성", description = "알림을 보냅니다.")
+    public void sendNotification(@RequestBody Long id, String message) {
+        notificationService.sendNotification(id, message);
     }
 
     // 알림 리스트
     @GetMapping("/list")
-    public List<NotificationDto> getNotification(@RequestParam Long memberId) {
+    @Operation(summary = "알림 목록", description = "알림을 조회합니다.")
+    public List<NotificationResponse> getNotification(@RequestParam Long memberId) {
         return notificationService.getNotification(memberId);
     }
 
     // 알림 읽기 및 감정분석결과 확인하기
     @GetMapping("/read/{id}")
-    public RedirectView readNotification(@PathVariable Long id) {
-        String redirectUrl = notificationService.readNotification(id);
-        return new RedirectView(redirectUrl);
+    @Operation(summary = "알림 읽기", description = "해당 알림을 읽습니다.")
+    public NotificationResponse readNotification(@PathVariable Long id) {
+        return notificationService.readNotification(id);
     }
 
     // 모두 읽음 처리 하기
     @GetMapping("/read-all")
-    public void readAllNotification(Long memberId) {
-        notificationService.readAllNotification(memberId);
+    @Operation(summary = "알림 전체 읽기", description = "모든 알림을 읽음처리합니다.")
+    public List<NotificationResponse> readAllNotification(Long memberId) {
+        return notificationService.readAllNotification(memberId);
     }
 
     // 알림 일부 삭제
     @PostMapping("/delete/{id}")
-    @ResponseBody
+    @Operation(summary = "알림 삭제", description = "해당 알림을 삭제합니다.")
     public void deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
     }
 
     // 알림 모두 삭제
     @PostMapping("/delete-all")
-    @ResponseBody
+    @Operation(summary = "알림 전체 삭제", description = "모든 알림을 삭제합니다.")
     public void deleteAllNotification(Long memberId) {
         notificationService.deleteAllNotification(memberId);
     }

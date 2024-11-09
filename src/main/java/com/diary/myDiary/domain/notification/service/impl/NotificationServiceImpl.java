@@ -1,17 +1,16 @@
 package com.diary.myDiary.domain.notification.service.impl;
 
 import com.diary.myDiary.domain.member.entity.Member;
-import com.diary.myDiary.domain.notification.dto.NotificationDto;
+import com.diary.myDiary.domain.notification.dto.NotificationResponse;
 import com.diary.myDiary.domain.notification.entity.Notification;
+import com.diary.myDiary.domain.notification.entity.NotificationType;
 import com.diary.myDiary.domain.notification.repository.NotificationRepository;
 import com.diary.myDiary.domain.notification.service.NotificationService;
-import com.diary.myDiary.domain.notification.entity.NotificationType;
 import com.diary.myDiary.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,88 +20,68 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
 
+    // 이 부분이 아래 정적 팩토리 메서드 사용할려는데
+    private NotificationType notificationType;
+    private Boolean isRead;
+
     // 알림 보내기
     @Override
     @Transactional
-    public void sendNotification(NotificationDto notificationDto) {
-        Member member = memberRepository.findById(notificationDto.getMemberId())
+    public void sendNotification(Long memberId, String message) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("멤버 없음"));
 
-        Notification notification = Notification.builder()
-                .member(member)
-                .notificationType(NotificationType.EMOTION_ANALYSIS)
-                .message(notificationDto.getMessage())
-                .isRead(false)
-                .build();
-
+        Notification notification = Notification.from(member,notificationType, message, isRead);
         notificationRepository.save(notification);
     }
 
     // 알림 리스트
     @Override
-    @Transactional
-    public List<NotificationDto> getNotification(Long memberId) {
+    @Transactional(readOnly = true)
+    public List<NotificationResponse> getNotification(Long memberId) {
         List<Notification> notifications = notificationRepository.findByMemberId(memberId);
-        List<NotificationDto> notificationDtos = new ArrayList<>();
-        for (Notification notification : notifications) {
-            NotificationDto dto = new NotificationDto(
-                    notification.getId(),
-                    notification.getMember().getId(),
-                    notification.getMessage(),
-                    notification.getNotificationType(),
-                    notification.getIsRead(),
-                    notification.getCreatedDate()
-            );
-            notificationDtos.add(dto);
-        }
-        return notificationDtos;
+        return NotificationResponse.listOf(notifications);
     }
 
     // 알림 부분 읽기
     @Override
     @Transactional
-    public String readNotification(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
+    public NotificationResponse readNotification(Long id) {
+        Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("알림 없음"));
 
-        notification.setIs_read(true);
+        notification.setIsRead(true);
         notificationRepository.save(notification);
 
-        // 이거 수정 해야함......
-        return "해당 감정 분석 결과 url/" + notificationId;
+        return NotificationResponse.of(notification);
     }
 
     // 알림 전체 읽기
     @Override
     @Transactional
-    public void readAllNotification(Long memberId) {
+    public List<NotificationResponse> readAllNotification(Long memberId) {
         List<Notification> notifications = notificationRepository.findByMemberId(memberId);
 
         for (Notification notification : notifications) {
-            notification.setIs_read(true);
+            notification.setIsRead(true);
         }
 
         notificationRepository.saveAll(notifications);  // 여러 알림을 한번에 저장
+
+        return NotificationResponse.listOf(notifications);
     }
 
     // 알림 삭제하기
     @Override
     @Transactional
-    public void deleteNotification(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("삭제할 알림이 없음"));
-
-        notificationRepository.delete(notification);
+    public void deleteNotification(Long id) {
+        notificationRepository.deleteById(id);
     }
 
     // 알림 전체 삭제하기
     @Override
     @Transactional
     public void deleteAllNotification(Long memberId) {
-        List<Notification> notifications = notificationRepository.findByMemberId(memberId);
-
-        notificationRepository.deleteAll(notifications);
+        notificationRepository.deleteByMemberId(memberId);
     }
-
-
 }

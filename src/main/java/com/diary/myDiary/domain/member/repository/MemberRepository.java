@@ -14,6 +14,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
                 .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
+    // Notification 부분 멤버Id 예외처리
+    default Member findByMemberIdOrThrow(Long id) {
+        return findById(id)
+                .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
     Optional<Member> findByUsername(String username);
 
     boolean existsByUsername(String username);

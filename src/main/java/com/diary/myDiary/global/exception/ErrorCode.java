@@ -14,6 +14,9 @@ public enum ErrorCode {
     /* 다이어리 */
     NOT_FOUND_DIARY(00, "다이어리를 찾을 수 없습니다."),
 
+    /* 알림 */
+    NOT_FOUND_NOTIFICATION(00, "알림이 존재하지 않습니다."),
+
     /* 공용 */
     NOT_FOUND_ACCESS_TOKEN(00, "토큰을 찾을 수 없습니다."),
     EXPIRED_ACCESS_TOKEN(403, "토큰의 유효시간이 만료되었습니다."),

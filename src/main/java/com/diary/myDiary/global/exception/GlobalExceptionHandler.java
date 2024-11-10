@@ -52,11 +52,4 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(NotificationException.class)
-    public ResponseEntity<ErrorResponse> handleNotificationException(NotificationException ex) {
-        ErrorCode errorCode = ex.getErrorCode();
-
-        return null;
-    }
-
 }

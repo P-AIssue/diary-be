@@ -28,8 +28,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void sendNotification(Long memberId, String message) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("멤버 없음"));
+        Member member = memberRepository.findByMemberIdOrThrow(memberId);
 
         Notification notification = Notification.from(member,notificationType, message, isRead);
         notificationRepository.save(notification);
@@ -47,8 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public NotificationResponse readNotification(Long id) {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("알림 없음"));
+        Notification notification = notificationRepository.findByIdOrThrow(id);
 
         notification.setIsRead(true);
         notificationRepository.save(notification);
@@ -60,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public List<NotificationResponse> readAllNotification(Long memberId) {
-        List<Notification> notifications = notificationRepository.findByMemberId(memberId);
+        List<Notification> notifications = notificationRepository.findByMemberIdOrThrow(memberId);
 
         for (Notification notification : notifications) {
             notification.setIsRead(true);
@@ -75,13 +73,15 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void deleteNotification(Long id) {
-        notificationRepository.deleteById(id);
+        Notification notification = notificationRepository.findByIdOrThrow(id);
+        notificationRepository.deleteById(notification.getId());
     }
 
     // 알림 전체 삭제하기
     @Override
     @Transactional
     public void deleteAllNotification(Long memberId) {
-        notificationRepository.deleteByMemberId(memberId);
+        List<Notification> notifications = notificationRepository.findByMemberIdOrThrow(memberId);
+        notificationRepository.deleteAll(notifications);
     }
 }

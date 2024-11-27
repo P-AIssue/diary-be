@@ -5,6 +5,7 @@ import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -34,5 +35,13 @@ public class Diary extends BaseTimeEntity {
                 .emotionTag(emotionTag)
                 .member(member)
                 .build();
+    }
+
+    @Column(name= "image_url", length = 1000, nullable = true)
+    private String imageUrl;
+
+    //메서드명 추천점..
+    public void url(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

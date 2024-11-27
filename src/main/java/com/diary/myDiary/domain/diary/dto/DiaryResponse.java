@@ -8,15 +8,20 @@ import java.util.stream.Collectors;
 public record DiaryResponse(
         Long id,
         String content,
-        String emotionTag
+        String emotionTag,
+        String imageUrl
 ) {
     public static DiaryResponse of(Diary diary) {
-        return new DiaryResponse(diary.getId(), diary.getContent(), diary.getEmotionTag());
+        return new DiaryResponse(diary.getId(), diary.getContent(), diary.getEmotionTag(), diary.getImageUrl());
     }
 
     public static List<DiaryResponse> listOf(List<Diary> diaries) {
         return diaries.stream()
                 .map(DiaryResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public DiaryResponse(String content) {
+        this(null, content, null, null);
     }
 }

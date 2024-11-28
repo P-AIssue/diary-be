@@ -3,8 +3,11 @@ package com.diary.myDiary.global.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.diary.myDiary.domain.member.exception.MemberException;
+import com.diary.myDiary.domain.notification.exception.NotificationException;
 import com.diary.myDiary.global.exception.dto.ErrorResponseV0;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,4 +51,5 @@ public class GlobalExceptionHandler {
                 .message(errorCode.getMessage())
                 .build();
     }
+
 }

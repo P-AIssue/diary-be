@@ -5,6 +5,7 @@ import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

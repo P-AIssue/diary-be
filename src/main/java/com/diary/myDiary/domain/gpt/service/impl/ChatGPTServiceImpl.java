@@ -5,7 +5,6 @@ import com.diary.myDiary.domain.diary.repository.DiaryRepository;
 import com.diary.myDiary.domain.gpt.config.ChatGPTConfig;
 import com.diary.myDiary.domain.gpt.dto.*;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
-import com.diary.myDiary.domain.notification.entity.Notification;
 import com.diary.myDiary.domain.notification.repository.NotificationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

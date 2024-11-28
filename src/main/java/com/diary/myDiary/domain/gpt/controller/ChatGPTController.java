@@ -75,8 +75,19 @@ public class ChatGPTController {
      */
     @PostMapping("/analyzeEmotion")
     public ResponseVO<Map<String, Object>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
+
         Long diaryId = emotionRequest.diaryId();
+
         Map<String, Object> result = chatGPTService.analyzeEmotion(diaryId);
         return new ResponseVO<>(result);
     }
+
+//    /**
+//     * 감정 분석이 완료되면 알림 생성
+//     */
+//    @PostMapping("/successNotification")
+//    public ResponseVO<Map<String, Object>> successNotification(@RequestBody NotificationDTO notificationdto){
+//
+//        return null;
+//    }
 }

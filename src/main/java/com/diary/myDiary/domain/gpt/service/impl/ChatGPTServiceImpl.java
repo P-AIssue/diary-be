@@ -3,11 +3,10 @@ package com.diary.myDiary.domain.gpt.service.impl;
 import com.diary.myDiary.domain.diary.entity.Diary;
 import com.diary.myDiary.domain.diary.repository.DiaryRepository;
 import com.diary.myDiary.domain.gpt.config.ChatGPTConfig;
-import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
-import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
-import com.diary.myDiary.domain.gpt.dto.EmotionAnalyzeDTO;
-import com.diary.myDiary.domain.gpt.dto.ImageGenerationRequestDTO;
+import com.diary.myDiary.domain.gpt.dto.*;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
+import com.diary.myDiary.domain.notification.entity.Notification;
+import com.diary.myDiary.domain.notification.repository.NotificationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.diary.myDiary.domain.notification.service.NotificationService;
+
 /**
  * ChatGPT Service 구현체
  */
@@ -37,6 +38,9 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     private final DiaryRepository diaryRepository;
     private final ChatGPTConfig chatGPTConfig;
     private final ObjectMapper objectMapper;
+
+    private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
     @Value("${openai.url.model}")
     private String modelUrl;
@@ -215,6 +219,8 @@ public class ChatGPTServiceImpl implements ChatGPTService {
 
         Diary diary = diaryRepository.getByIdOrThrow(diaryId);
         String diaryContent = diary.getContent();
+        Long memberId = diary.getMember().getId();
+
 
         HttpHeaders headers = chatGPTConfig.httpHeaders();
 
@@ -238,9 +244,55 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+
+            // 알림 생성
+            String message = "감정분석이 완료되었습니다.";
+            notificationService.sendNotification(memberId, message);
+
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException :: " + e.getMessage());
         }
         return resultMap; // 분석 결과 반환
     }
+
+//    @Override
+//    public Map<String, Object> successNotification(Long notificationId) {
+//        log.debug("[+] 성공 알림을 생성합니다. 알림 ID: {}", notificationId);
+//
+//        // 헤더 설정
+//        HttpHeaders headers = chatGPTConfig.httpHeaders();
+//
+//        // 알림 데이터 생성
+//        NotificationDTO notificationDto = NotificationDTO.builder()
+//                .notificationId(notificationId)
+//                .message("감정 분석이 완료되었습니다.")
+//                .build();
+//
+//        // 요청 엔티티 생성
+//        HttpEntity<NotificationDTO> requestEntity = new HttpEntity<>(notificationDto, headers);
+//
+//        // API 호출
+//        String notificationUrl = chatGPTConfig
+//                .restTemplate()
+//                .exchange(notificationUrl, HttpMethod.POST, requestEntity, String.class);// 실제 알림 API URL
+//
+//        ResponseEntity<Map> response;
+//        try {
+//            response = chatGPTConfig.restTemplate()
+//                    .postForEntity(notificationUrl, requestEntity, Map.class);
+//
+//            // 성공 응답 처리
+//            if (response.getStatusCode().is2xxSuccessful()) {
+//                log.info("[+] 알림 전송 성공: {}", response.getBody());
+//                return response.getBody();
+//            } else {
+//                throw new RuntimeException("알림 전송 실패: " + response.getStatusCode());
+//            }
+//        } catch (Exception e) {
+//            log.error("알림 전송 중 예외 발생: {}", e.getMessage());
+//            throw new RuntimeException("알림 전송 중 오류가 발생했습니다.", e);
+//        }
+//    }
+
+
 }

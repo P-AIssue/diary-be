@@ -4,12 +4,14 @@ package com.diary.myDiary.domain.member.controller;
 import com.diary.myDiary.domain.member.dto.*;
 import com.diary.myDiary.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "멤버 관리", description = "멤버 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")

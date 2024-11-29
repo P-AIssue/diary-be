@@ -4,6 +4,7 @@ import com.diary.myDiary.domain.diary.dto.DiaryRequest;
 import com.diary.myDiary.domain.diary.dto.DiaryResponse;
 import com.diary.myDiary.domain.diary.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "일기", description = "일기 관련 API")
 @RestController
 @RequestMapping("/diary")
 @RequiredArgsConstructor

@@ -3,11 +3,13 @@ package com.diary.myDiary.domain.notification.controller;
 import com.diary.myDiary.domain.notification.dto.NotificationResponse;
 import com.diary.myDiary.domain.notification.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "알림", description = "알림 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/notification")

@@ -16,7 +16,7 @@ public record NotificationResponse (
     public static NotificationResponse of(Notification notification) {
         return new NotificationResponse(
                 notification.getId(), notification.getMessage(), notification.getNotificationType(),
-                notification.getIsRead());
+                notification.isRead());
     }
 
     public static List<NotificationResponse> listOf(List<Notification> notifications) {

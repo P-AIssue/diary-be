@@ -22,7 +22,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     // 이 부분이 아래 정적 팩토리 메서드 사용할려는데
     private NotificationType notificationType;
-    private Boolean isRead;
+    private boolean isRead;
 
     // 알림 보내기
     @Override
@@ -30,7 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotification(Long memberId, String message) {
         Member member = memberRepository.findByMemberIdOrThrow(memberId);
 
-        Notification notification = Notification.from(member,notificationType, message, isRead);
+        Notification notification = Notification.from(member, notificationType, message, isRead);
         notificationRepository.save(notification);
     }
 
@@ -48,7 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponse readNotification(Long id) {
         Notification notification = notificationRepository.findByIdOrThrow(id);
 
-        notification.setIsRead(true);
+        notification.setRead(true);
         notificationRepository.save(notification);
 
         return NotificationResponse.of(notification);
@@ -61,7 +61,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<Notification> notifications = notificationRepository.findByMemberIdOrThrow(memberId);
 
         for (Notification notification : notifications) {
-            notification.setIsRead(true);
+            notification.setRead(true);
         }
 
         notificationRepository.saveAll(notifications);  // 여러 알림을 한번에 저장

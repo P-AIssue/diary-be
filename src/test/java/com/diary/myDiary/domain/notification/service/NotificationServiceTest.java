@@ -126,27 +126,27 @@ class NotificationServiceTest {
 
         Notification notification = Notification.builder()
                 .id(notificationId)
-                .isRead(false)
-                .message("Test Message")
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS) // 알림 타입 설정
+                .message("Test Notification") // 테스트 메시지
+                .isRead(false) // 읽음 상태 초기화
                 .build();
 
-        // findById가 호출되면 notification을 반환하도록 mock 설정
-        when(notificationRepository.findById(notificationId)).thenReturn(Optional.ofNullable(notification));
+        // Mock 설정: findByIdOrThrow 호출 시 notification 반환
+        when(notificationRepository.findByIdOrThrow(notificationId)).thenReturn(notification);
 
-        // When
+        // When: 알림 읽기 서비스 호출
         NotificationResponse result = notificationService.readNotification(notificationId);
 
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.message()).isEqualTo("Test Message");
-        assertThat(result.isRead()).isTrue();
+        // Then: 결과 검증
+        assertThat(result).isNotNull(); // 결과 객체가 null이 아님
+        assertThat(result.message()).isEqualTo("Test Notification"); // 메시지가 예상 값과 동일
+        assertThat(result.isRead()).isTrue(); // 읽음 상태가 true로 변경되었는지 확인
 
-        verify(notificationRepository, times(1)).findById(notificationId);
-        verify(notificationRepository, times(1)).save(notification);
+        // Mock 호출 검증
+        verify(notificationRepository, times(1)).findByIdOrThrow(notificationId); // findByIdOrThrow 호출 확인
+        verify(notificationRepository, times(1)).save(notification); // save 호출 확인
     }
-
-
-
 
     @Test
     @DisplayName("모든 알림 읽기 테스트")
@@ -154,66 +154,117 @@ class NotificationServiceTest {
         // Given
         Long memberId = 1L;
 
-        List<Notification> notifications = Arrays.asList(
-                Notification.builder().id(1L).isRead(false).message("Message 1").build(),
-                Notification.builder().id(2L).isRead(false).message("Message 2").build()
-        );
+        Notification notification1 = Notification.builder()
+                .id(1L)
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS)
+                .message(NotificationType.EMOTION_ANALYSIS.getMessage())
+                .isRead(false)
+                .build();
 
-        when(notificationRepository.findByMemberId(memberId)).thenReturn(notifications);
+        Notification notification2 = Notification.builder()
+                .id(2L)
+                .member(Member.builder().id(memberId).build())
+                .message("Test Notification 2")
+                .isRead(false)
+                .build();
+
+        Notification notification3 = Notification.builder()
+                .id(3L)
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS)
+                .message("혼합: " + NotificationType.EMOTION_ANALYSIS.getMessage() + " | 추가 메시지")
+                .isRead(false)
+                .build();
+
+        List<Notification> notifications = Arrays.asList(notification1, notification2, notification3);
+
+        // Mock 설정
+        when(notificationRepository.findByMemberIdOrThrow(memberId)).thenReturn(notifications);
 
         // When
         List<NotificationResponse> results = notificationService.readAllNotification(memberId);
 
         // Then
         assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(2);
+        assertThat(results.size()).isEqualTo(3);
+
+        // 각 알림이 읽음 상태로 업데이트되었는지 확인
         for (Notification notification : notifications) {
-            assertThat(notification.isRead()).isTrue();
+            assertThat(notification.isRead()).isTrue();  // 읽음 상태가 true로 변경되었는지 확인
         }
 
-        verify(notificationRepository, times(1)).findByMemberId(memberId);
-        verify(notificationRepository, times(1)).saveAll(notifications);
+        // 메서드 호출 여부 확인
+        verify(notificationRepository, times(1)).findByMemberIdOrThrow(memberId);  // findByMemberIdOrThrow 호출 확인
+        verify(notificationRepository, times(1)).saveAll(notifications);  // saveAll 호출 확인
     }
-
 
     @Test
     @DisplayName("단일 알림 삭제 테스트")
     public void testDeleteNotification() {
         // Given
         Long notificationId = 1L;
-        Notification notification = Notification.builder().id(notificationId).build();
+        Long memberId = 1L;
 
-        when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+        Notification notification = Notification.builder()
+                .id(notificationId)
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS) // 알림 타입 설정
+                .message("Test Notification") // 테스트 메시지
+                .isRead(false) // 읽음 상태 초기화
+                .build();
+
+        // findByIdOrThrow를 사용하여 notification을 반환하도록 mock 설정
+        when(notificationRepository.findByIdOrThrow(notificationId)).thenReturn(notification);
 
         // When
         notificationService.deleteNotification(notificationId);
 
         // Then
-        verify(notificationRepository, times(1)).findById(notificationId);
-        verify(notificationRepository, times(1)).delete(notification);
+        verify(notificationRepository, times(1)).findByIdOrThrow(notificationId);
+        verify(notificationRepository, times(1)).delete(notification); // 삭제 메서드 호출 확인
     }
-
 
     @Test
     @DisplayName("모든 알림 삭제 테스트")
     public void testDeleteAllNotification() {
         // Given
         Long memberId = 1L;
-        List<Notification> notifications = Arrays.asList(
-                Notification.builder().id(1L).build(),
-                Notification.builder().id(2L).build()
-        );
 
-        when(notificationRepository.findByMemberId(memberId)).thenReturn(notifications);
+        Notification notification1 = Notification.builder()
+                .id(1L)
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS)
+                .message(NotificationType.EMOTION_ANALYSIS.getMessage())
+                .isRead(false)
+                .build();
+
+        Notification notification2 = Notification.builder()
+                .id(2L)
+                .member(Member.builder().id(memberId).build())
+                .message("Test Notification 2")
+                .isRead(false)
+                .build();
+
+        Notification notification3 = Notification.builder()
+                .id(3L)
+                .member(Member.builder().id(memberId).build())
+                .notificationType(NotificationType.EMOTION_ANALYSIS)
+                .message("혼합: " + NotificationType.EMOTION_ANALYSIS.getMessage() + " | 추가 메시지")
+                .isRead(false)
+                .build();
+
+        List<Notification> notifications = Arrays.asList(notification1, notification2, notification3);
+
+        // Mock 설정
+        when(notificationRepository.findByMemberIdOrThrow(memberId)).thenReturn(notifications);
 
         // When
         notificationService.deleteAllNotification(memberId);
 
         // Then
-        verify(notificationRepository, times(1)).findByMemberId(memberId);
-        verify(notificationRepository, times(1)).deleteAll(notifications);
+        verify(notificationRepository, times(1)).findByMemberIdOrThrow(memberId); // findByMemberIdOrThrow 호출 검증
+        verify(notificationRepository, times(1)).deleteAll(notifications); // deleteAll 호출 검증
     }
-
-
 }
 

@@ -74,7 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void deleteNotification(Long id) {
         Notification notification = notificationRepository.findByIdOrThrow(id);
-        notificationRepository.deleteById(notification.getId());
+        notificationRepository.delete(notification);
     }
 
     // 알림 전체 삭제하기

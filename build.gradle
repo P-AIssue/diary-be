@@ -54,6 +54,12 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+
+	testLogging {
+		events 'passed', 'skipped', 'failed'
+		exceptionFormat 'full'
+	}
+
 }
 
 // plain jar 생성 방지

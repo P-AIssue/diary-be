@@ -40,8 +40,8 @@ public class Diary extends BaseTimeEntity {
     @Column(name= "image_url", length = 1000, nullable = true)
     private String imageUrl;
 
-    //메서드명 추천점..
-    public void url(String imageUrl) {
+    //url을 지정
+    public void setUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 }

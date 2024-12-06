@@ -34,7 +34,7 @@ public class MemberController {
     @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
     @ResponseStatus(HttpStatus.OK)
     public void updateInfo(@Valid @RequestBody MemberUpdateDTO memberUpdateDTO) throws Exception {
-        memberService.update(memberUpdateDTO);
+        memberService.updateNickname(memberUpdateDTO);
     }
 
     /**

@@ -57,16 +57,8 @@ public class Member extends BaseTimeEntity {
         this.password = passwordEncoder.encode(password);
     }
 
-    public void updateName(String name) {
-        this.name = name;
-    }
-
     public void updateNickName(String nickName) {
         this.nickName = nickName;
-    }
-
-    public void updateAge(Integer age) {
-        this.age = age;
     }
 
     //== 패스워드 암호화 ==//

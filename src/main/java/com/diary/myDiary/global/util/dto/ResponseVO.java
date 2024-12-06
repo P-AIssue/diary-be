@@ -1,4 +1,4 @@
-package com.diary.myDiary.domain.gpt.dto;
+package com.diary.myDiary.global.util.dto;
 
 public record ResponseVO<T> (
         T data

@@ -186,6 +186,13 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         // 이미지 생성 API 엔드포인트
         String imageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
 
+        // 메시지 구성
+        List<Map<String, String>> messages = new ArrayList<>();
+        messages.add(Map.of(
+                "role", "user",
+                "content", "다음 내용을 기반으로 : \"" + diaryContent + "\"\n파스텔 톤으로 그림 생성해줘"
+        ));
+
         // 이미지 생성 요청 DTO 생성
         ImageGenerationRequestDTO requestDto = ImageGenerationRequestDTO.builder()
                 .prompt(diaryContent)
@@ -237,7 +244,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         HttpEntity<EmotionAnalyzeDTO> requestEntity = new HttpEntity<>(emotionAnalyzeDto, headers);
 
         ResponseEntity<String> response = chatGPTConfig
-                .restTemplate()
+                .restTemplate() 
                 .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
 
         Map<String, Object> resultMap = new HashMap<>();

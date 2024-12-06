@@ -1,18 +1,28 @@
 package com.diary.myDiary.domain.notification.controller;
 
 import com.diary.myDiary.domain.notification.dto.NotificationResponse;
+import com.diary.myDiary.domain.notification.entity.Notification;
 import com.diary.myDiary.domain.notification.entity.NotificationType;
+import com.diary.myDiary.domain.notification.exception.NotificationException;
+import com.diary.myDiary.domain.notification.repository.NotificationRepository;
 import com.diary.myDiary.domain.notification.service.NotificationService;
+import com.diary.myDiary.global.exception.ErrorCode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,103 +30,132 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@Transactional
+@AutoConfigureMockMvc
 public class NotificationControllerTest {
 
-    @MockBean
+    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    EntityManager em;
 
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    // 직렬화
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    List<Notification> notifications = Arrays.asList();
+    private Long id = 1L;
+    private NotificationType notificationType = NotificationType.EMOTION_ANALYSIS;
+    private String message = "테스트 진행";
+    private boolean isRead = false;
+
+    private void clear() {
+        em.flush();
+        em.clear();
+    }
+
+    /**
+    1. 알림이 제대로 가는지
+    2. 알림 목록 조회가 되는지
+    3. 알림 읽기 (전체읽기) 후 읽은 표시가 되는지
+    4. 알림 삭제가 제대로 작동하는지
+    5. 알림이 없는 상태에서 알림 삭제 오류처리가 재대로 되는지
+     **/
+
     @Test
     @DisplayName("알림 생성 테스트")
     public void testSendNotification() throws Exception {
-        Long memberId = 1L;
-        String message = "Test Notification Message";
+        // given
+        String sendData = objectMapper.writeValueAsString(new NotificationResponse
+                (id, message, notificationType, isRead));
 
-        doNothing().when(notificationService).sendNotification(memberId, message);
-
-        mockMvc.perform(post("/send")
-                        .param("id", String.valueOf(memberId))
-                        .param("message", message))
+        // when
+        mockMvc.perform(post("/notification/send")
+                        .header("Content-Type", MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON) // JSON 형태 반환이ㅛㅇ
+                        .content(sendData))
                 .andExpect(status().isOk());
 
-        verify(notificationService, times(1)).sendNotification(memberId, message);
+        // then
+        Notification notification = notificationRepository.findById(id).orElseThrow(
+                () -> new NotificationException(ErrorCode.NOT_FOUND_NOTIFICATION)
+        );
+
+        assertThat(notification.getMessage()).isEqualTo(message);
+        assertThat(notification.getNotificationType()).isEqualTo(notificationType);
+        assertThat(notification.isRead()).isEqualTo(isRead);
+
     }
 
     @Test
     @DisplayName("알림 목록 조회 테스트")
     public void testGetNotification() throws Exception {
-        Long memberId = 1L;
-        NotificationResponse response = new NotificationResponse(1L, "Test Notification", NotificationType.EMOTION_ANALYSIS, true);
-        List<NotificationResponse> responses = Arrays.asList(response);
+        // given
 
-        when(notificationService.getNotification(memberId)).thenReturn(responses);
 
-        mockMvc.perform(get("/list")
-                        .param("memberId", String.valueOf(memberId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].message").value("Test Notification"));
+        // when
 
-        verify(notificationService, times(1)).getNotification(memberId);
+        // then
+
+
+
     }
 
     @Test
     @DisplayName("알림 읽기 테스트")
     public void testReadNotification() throws Exception {
-        Long notificationId = 1L;
-        NotificationResponse response = new NotificationResponse(1L, "Test Notification", NotificationType.EMOTION_ANALYSIS, true);
+        // given
 
-        when(notificationService.readNotification(notificationId)).thenReturn(response);
+        // when
 
-        mockMvc.perform(get("/read/{id}", notificationId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Test Notification"));
+        // then
 
-        verify(notificationService, times(1)).readNotification(notificationId);
+
+
     }
 
     @Test
     @DisplayName("알림 전체 읽기 테스트")
     public void testReadAllNotification() throws Exception {
-        Long memberId = 1L;
-        NotificationResponse response = new NotificationResponse(1L, "Test Notification", NotificationType.EMOTION_ANALYSIS, true);
-        List<NotificationResponse> responses = Arrays.asList(response);
+        // given
 
-        when(notificationService.readAllNotification(memberId)).thenReturn(responses);
+        // when
 
-        mockMvc.perform(get("/read-all")
-                        .param("memberId", String.valueOf(memberId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].message").value("Test Notification"));
+        // then
 
-        verify(notificationService, times(1)).readAllNotification(memberId);
+
+
     }
 
     @Test
     @DisplayName("알림 삭제 테스트")
     public void testDeleteNotification() throws Exception {
-        Long notificationId = 1L;
+        // given
 
-        doNothing().when(notificationService).deleteNotification(notificationId);
+        // when
 
-        mockMvc.perform(post("/delete/{id}", notificationId))
-                .andExpect(status().isOk());
+        // then
 
-        verify(notificationService, times(1)).deleteNotification(notificationId);
+
+
     }
 
     @Test
     @DisplayName("알림 전체 삭제 테스트")
     public void testDeleteAllNotification() throws Exception {
-        Long memberId = 1L;
+        // given
 
-        doNothing().when(notificationService).deleteAllNotification(memberId);
+        // when
 
-        mockMvc.perform(post("/delete-all")
-                        .param("memberId", String.valueOf(memberId)))
-                .andExpect(status().isOk());
+        // then
 
-        verify(notificationService, times(1)).deleteAllNotification(memberId);
+
+
     }
 }

@@ -11,7 +11,7 @@ public interface MemberService {
     void signup(MemberSignUpDTO memberSignUpDTO) throws Exception;
 
     //== 정보수정 ==//
-    void update(MemberUpdateDTO memberUpdateDTO) throws Exception;
+    void updateNickname(MemberUpdateDTO memberUpdateDTO) throws Exception;
 
     void updatePassword(String checkPassword, String newPassword) throws Exception;
 

@@ -39,12 +39,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(MemberUpdateDTO memberUpdateDTO) {
+    public void updateNickname(MemberUpdateDTO memberUpdateDTO) {
 
         Member member = memberRepository.getByUsernameOrThrow(SecurityUtil.getLoginUsername());
 
-        memberUpdateDTO.age().ifPresent(member::updateAge);
-        memberUpdateDTO.name().ifPresent(member::updateName);
         memberUpdateDTO.nickName().ifPresent(member::updateNickName);
     }
 

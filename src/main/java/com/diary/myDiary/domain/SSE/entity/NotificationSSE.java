@@ -35,6 +35,7 @@ public class NotificationSSE extends BaseTimeEntity {
     @Embedded
     private RelatedUrl url;
 
+    // 읽음 처리
     @Column(nullable = false)
     private Boolean isRead;
 

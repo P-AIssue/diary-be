@@ -40,7 +40,7 @@ public class DiaryServiceImpl implements DiaryService {
 
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
-            diary.url(imageUrl);
+            diary.setUrl(imageUrl);
             diaryRepository.save(diary);
         } else {
             log.error("이미지 생성에 실패하였습니다. 일기 ID: " + diary.getId());

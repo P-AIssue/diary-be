@@ -3,7 +3,7 @@ package com.diary.myDiary.domain.gpt.controller;
 import com.diary.myDiary.domain.gpt.dto.AnalyzeEmotionRequest;
 import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
-import com.diary.myDiary.domain.gpt.dto.ResponseVO;
+import com.diary.myDiary.global.util.dto.ResponseVO;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

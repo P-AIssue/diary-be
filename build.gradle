@@ -29,6 +29,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// Spring Boot starter for Thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
 	runtimeOnly 'com.h2database:h2'

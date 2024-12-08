@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="common/header :: header"></head>
+<body>
+<h2>일기 상세보기</h2>
+
+<div>
+    <h3>제목: <span th:text="${diary.emotionTag}">감정 태그</span></h3>
+    <p>작성자: <span th:text="${diary.member.name}">작성자 이름</span></p>
+    <p>작성일: <span th:text="${#dates.format(diary.createdDate, 'yyyy-MM-dd HH:mm')}">작성일</span></p>
+    <hr>
+    <div>
+        <p>내용:</p>
+        <p th:text="${diary.content}">일기 내용</p>
+    </div>
+</div>
+
+<a th:href="@{/admin/members}">돌아가기</a>
+</body>
+<footer th:replace="common/footer :: footer"></footer>
+</html>

@@ -23,7 +23,7 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 알림 type 고정 값 사용 (아이콘)
+    // 알림 type 고정 값 사용
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
@@ -35,7 +35,6 @@ public class Notification extends BaseTimeEntity {
     @Setter
     @Column(nullable = false)
     private boolean isRead;
-
 
     public static Notification from(Member member, NotificationType notificationType, String message, boolean isRead) {
         return Notification.builder()

@@ -1,5 +1,6 @@
 package com.diary.myDiary.domain.diary.entity;
 
+// import com.diary.myDiary.domain.admin.entity.Admin;
 import com.diary.myDiary.domain.member.entity.Member;
 import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;

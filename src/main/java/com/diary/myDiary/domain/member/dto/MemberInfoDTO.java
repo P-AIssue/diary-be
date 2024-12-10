@@ -11,7 +11,7 @@ public class MemberInfoDTO {
 
     private String name;
 
-    private String nickName;
+    private String nickname;
 
     private String username;
 
@@ -20,7 +20,7 @@ public class MemberInfoDTO {
     @Builder
     public MemberInfoDTO(Member member) {
         this.name = member.getName();
-        this.nickName = member.getNickName();
+        this.nickname = member.getNickname();
         this.username = member.getUsername();
         this.age = member.getAge();
     }

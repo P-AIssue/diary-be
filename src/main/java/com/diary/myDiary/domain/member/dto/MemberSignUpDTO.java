@@ -26,7 +26,7 @@ public record MemberSignUpDTO(
         @NotBlank(message = "닉네임을 입력해주세요.")
         @Size(min = 2, message = "닉네임이 너무 짧습니다.")
         @NotBlank
-        String nickName,
+        String nickname,
 
         @NotNull(message = "나이를 입력해주세요")
         @Range(min = 0, max = 150)
@@ -42,7 +42,7 @@ public record MemberSignUpDTO(
                 .username(username)
                 .password(password)
                 .name(name)
-                .nickName(nickName)
+                .nickname(nickname)
                 .age(age)
                 .gender(gender)
                 .build();

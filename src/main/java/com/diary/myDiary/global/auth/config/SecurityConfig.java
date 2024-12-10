@@ -19,6 +19,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -67,11 +68,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                .csrf((auth) -> auth.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors((auth) -> auth.configurationSource(corsConfigurationSource()))
 
-                .formLogin((auth) -> auth.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
 
-                .httpBasic((auth) -> auth.disable())
+                .httpBasic(AbstractHttpConfigurer::disable)
 
                 .headers(header -> header.frameOptions(
                         HeadersConfigurer.FrameOptionsConfig::sameOrigin))

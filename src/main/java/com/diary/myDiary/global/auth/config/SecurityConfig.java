@@ -85,7 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/notification/**").permitAll()
                         .requestMatchers("/diary/**").permitAll()
                         .requestMatchers("/api/v1/chatGpt/**").permitAll()
-
+                        .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/access-denied/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()

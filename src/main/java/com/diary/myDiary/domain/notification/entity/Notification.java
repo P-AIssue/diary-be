@@ -16,14 +16,14 @@ public class Notification extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
-    private Long Id;
+    private Long id;
 
     // Member 와 1 : n 관계 매핑
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    // 알림 type 고정 값 사용 (아이콘)
+    // 알림 type 고정 값 사용
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
@@ -34,15 +34,14 @@ public class Notification extends BaseTimeEntity {
     // 읽음을 확인 (true, false)
     @Setter
     @Column(nullable = false)
-    private Boolean isRead;
+    private boolean isRead;
 
-
-    public static Notification from(Member member, NotificationType notificationType, String message, Boolean isRead) {
+    public static Notification from(Member member, NotificationType notificationType, String message, boolean isRead) {
         return Notification.builder()
                 .member(member)
                 .notificationType(notificationType)
                 .message(message)
-                .isRead(isRead)
+                .isRead(false)
                 .build();
     }
 }

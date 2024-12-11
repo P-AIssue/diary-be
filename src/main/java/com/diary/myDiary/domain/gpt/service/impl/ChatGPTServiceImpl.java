@@ -261,44 +261,4 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         return resultMap; // 분석 결과 반환
     }
 
-//    @Override
-//    public Map<String, Object> successNotification(Long notificationId) {
-//        log.debug("[+] 성공 알림을 생성합니다. 알림 ID: {}", notificationId);
-//
-//        // 헤더 설정
-//        HttpHeaders headers = chatGPTConfig.httpHeaders();
-//
-//        // 알림 데이터 생성
-//        NotificationDTO notificationDto = NotificationDTO.builder()
-//                .notificationId(notificationId)
-//                .message("감정 분석이 완료되었습니다.")
-//                .build();
-//
-//        // 요청 엔티티 생성
-//        HttpEntity<NotificationDTO> requestEntity = new HttpEntity<>(notificationDto, headers);
-//
-//        // API 호출
-//        String notificationUrl = chatGPTConfig
-//                .restTemplate()
-//                .exchange(notificationUrl, HttpMethod.POST, requestEntity, String.class);// 실제 알림 API URL
-//
-//        ResponseEntity<Map> response;
-//        try {
-//            response = chatGPTConfig.restTemplate()
-//                    .postForEntity(notificationUrl, requestEntity, Map.class);
-//
-//            // 성공 응답 처리
-//            if (response.getStatusCode().is2xxSuccessful()) {
-//                log.info("[+] 알림 전송 성공: {}", response.getBody());
-//                return response.getBody();
-//            } else {
-//                throw new RuntimeException("알림 전송 실패: " + response.getStatusCode());
-//            }
-//        } catch (Exception e) {
-//            log.error("알림 전송 중 예외 발생: {}", e.getMessage());
-//            throw new RuntimeException("알림 전송 중 오류가 발생했습니다.", e);
-//        }
-//    }
-
-
 }

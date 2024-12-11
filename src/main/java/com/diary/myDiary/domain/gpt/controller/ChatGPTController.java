@@ -5,6 +5,8 @@ import com.diary.myDiary.domain.gpt.dto.ChatCompletionDTO;
 import com.diary.myDiary.domain.gpt.dto.CompletionDTO;
 import com.diary.myDiary.global.util.dto.ResponseVO;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "감정분석 및 이미지", description = "GPT 관련 API")
 @Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/chatGpt")
@@ -64,6 +67,7 @@ public class ChatGPTController {
      * 일기 내용을 기반으로 이미지 생성
      */
     @PostMapping("/generateImage")
+    @Operation(summary = "이미지 생성", description = "일기 내용을 기반으로 이미지를 생성합니다.")
     public ResponseVO<Map<String, Object>> generateImage(@RequestBody String diaryContent) {
         log.debug("Diary content :: " + diaryContent);
         Map<String, Object> result = chatGPTService.generateImageFromDiary(diaryContent);
@@ -74,6 +78,7 @@ public class ChatGPTController {
      * 일기 내용을 기반으로 감정 분석
      */
     @PostMapping("/analyzeEmotion")
+    @Operation(summary = "감정 분석", description = "일기 내용을 기반으로 감정을 분석합니다.")
     public ResponseVO<Map<String, Object>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
 
         Long diaryId = emotionRequest.diaryId();

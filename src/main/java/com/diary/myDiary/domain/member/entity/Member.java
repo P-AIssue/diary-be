@@ -36,7 +36,7 @@ public class Member extends BaseTimeEntity {
     private String name; //이름(실명)
 
     @Column(nullable = false, length = 30)
-    private String nickName; //별명
+    private String nickname; //별명
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -58,7 +58,7 @@ public class Member extends BaseTimeEntity {
     }
 
     public void updateNickName(String nickName) {
-        this.nickName = nickName;
+        this.nickname = nickName;
     }
 
     //== 패스워드 암호화 ==//

@@ -44,10 +44,16 @@ public class AdminServiceImpl implements AdminService {
     // 멤버 수정
     @Override
     public void updateMember(Long id, MemberInfoDTO memberDto) {
+        // ID로 멤버 찾기
         Member member = memberRepository.findByMemberIdOrThrow(id);
 
-        // 업데이트 로직
+        // DTO 값으로 멤버 정보 업데이트
+        member.updateName(memberDto.getName());
+        member.updateUsername(memberDto.getUsername());
         member.updateNickName(memberDto.getNickname());
+        member.updateAge(memberDto.getAge());
+
+        // 업데이트된 멤버 저장
         memberRepository.save(member);
     }
 

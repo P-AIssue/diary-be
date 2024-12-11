@@ -1,14 +1,15 @@
 package com.diary.myDiary.domain.admin.controller;
 
+import com.diary.myDiary.domain.member.dto.MemberInfoDTO;
+import com.diary.myDiary.domain.admin.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import com.diary.myDiary.domain.admin.service.AdminService;
 import org.springframework.web.bind.annotation.*;
 
-// 타임리프 연동 위해 RestController 미사용
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
     private final AdminService adminService;
 
     public AdminController(AdminService adminService) {
@@ -21,31 +22,32 @@ public class AdminController {
         return "admin/home";
     }
 
-    // 전체 멤버 리스트
+    // 전체 멤버 리스트 조회
     @GetMapping("/members")
     public String getAllMembers(Model model) {
         model.addAttribute("members", adminService.getAllMembers());
         return "admin/memberList";
     }
 
-    // 특정 멤버의 일기 리스트
-    @GetMapping("/members/{memberId}/diaries")
-    public String getMemberDiaries(@PathVariable Long memberId, Model model) {
-        model.addAttribute("diaries", adminService.getMemberDiaries(memberId));
-        return "admin/diaryList";
+    // 멤버 수정 화면
+    @GetMapping("/members/{id}/edit")
+    public String editMemberForm(@PathVariable Long id, Model model) {
+        MemberInfoDTO memberDto = adminService.getMemberById(id);
+        model.addAttribute("member", memberDto);
+        return "admin/editMember";
     }
 
-    // 특정 멤버의 알림 리스트
-    @GetMapping("/members/{memberId}/notifications")
-    public String getMemberNotifications(@PathVariable Long memberId, Model model) {
-        model.addAttribute("notifications", adminService.getMemberNotifications(memberId));
-        return "admin/notificationList";
+    // 멤버 수정
+    @PostMapping("/members/{id}/edit")
+    public String updateMember(@PathVariable Long id, @ModelAttribute MemberInfoDTO memberDto) {
+        adminService.updateMember(id, memberDto);
+        return "redirect:/admin/members";
     }
 
-    // 특정 일기의 상세 내용
-    @GetMapping("/diaries/{diaryId}")
-    public String getDiaryDetails(@PathVariable Long diaryId, Model model) {
-        model.addAttribute("diary", adminService.getDiaryDetails(diaryId));
-        return "admin/diaryDetails";
+    // 멤버 삭제
+    @PostMapping("/members/{id}/delete")
+    public String deleteMember(@PathVariable Long id) {
+        adminService.deleteMember(id);
+        return "redirect:/admin/members";
     }
 }

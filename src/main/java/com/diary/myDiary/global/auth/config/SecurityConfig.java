@@ -79,8 +79,14 @@ public class SecurityConfig {
                         HeadersConfigurer.FrameOptionsConfig::sameOrigin))
 
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/member/signUp", "/").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/member/").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/member/**").permitAll()
+                        .requestMatchers("/notification/**").permitAll()
+                        .requestMatchers("/diary/**").permitAll()
+                        .requestMatchers("/api/v1/chatGpt/**").permitAll()
+
+                        .requestMatchers("/access-denied/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/prometheus").permitAll()

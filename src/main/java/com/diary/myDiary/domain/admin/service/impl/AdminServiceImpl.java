@@ -20,6 +20,7 @@ public class AdminServiceImpl implements AdminService {
         this.memberRepository = memberRepository;
     }
 
+    // 멤버 리스트
     @Override
     public List<MemberInfoDTO> getAllMembers() {
         return memberRepository.findAll().stream()
@@ -27,21 +28,24 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
+    // 멤버 아이디 가져오기
     @Override
     public MemberInfoDTO getMemberById(Long id) {
         Member member = memberRepository.findByMemberIdOrThrow(id);
         return new MemberInfoDTO(member);
     }
 
+    // 멤버 수정
     @Override
     public void updateMember(Long id, MemberInfoDTO memberDto) {
         Member member = memberRepository.findByMemberIdOrThrow(id);
 
         // 업데이트 로직
-        member.updateNickName(memberDto.getNickName());
+        member.updateNickName(memberDto.getNickname());
         memberRepository.save(member);
     }
 
+    // 멤버 삭제
     @Override
     public void deleteMember(Long id) {
         Member member = memberRepository.findByMemberIdOrThrow(id);

@@ -23,31 +23,31 @@ public class AdminController {
     }
 
     // 전체 멤버 리스트 조회
-    @GetMapping("/members")
+    @GetMapping("/memberList")
     public String getAllMembers(Model model) {
         model.addAttribute("members", adminService.getAllMembers());
         return "admin/memberList";
     }
 
     // 멤버 수정 화면
-    @GetMapping("/members/{id}/edit")
+    @GetMapping("/updateMember/{id}")
     public String editMemberForm(@PathVariable Long id, Model model) {
         MemberInfoDTO memberDto = adminService.getMemberById(id);
         model.addAttribute("member", memberDto);
-        return "admin/editMember";
+        return "admin/updateMember";
     }
 
     // 멤버 수정
     @PostMapping("/members/{id}/edit")
     public String updateMember(@PathVariable Long id, @ModelAttribute MemberInfoDTO memberDto) {
         adminService.updateMember(id, memberDto);
-        return "redirect:/admin/members";
+        return "redirect:/admin/memberList";
     }
 
     // 멤버 삭제
     @PostMapping("/members/{id}/delete")
     public String deleteMember(@PathVariable Long id) {
         adminService.deleteMember(id);
-        return "redirect:/admin/members";
+        return "redirect:/admin/memberList";
     }
 }

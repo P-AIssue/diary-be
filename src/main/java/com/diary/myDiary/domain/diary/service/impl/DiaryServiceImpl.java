@@ -8,6 +8,7 @@ import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import com.diary.myDiary.domain.member.entity.Member;
 import com.diary.myDiary.domain.member.repository.MemberRepository;
 import com.diary.myDiary.global.auth.security.SecurityUtil;
+import com.diary.myDiary.global.util.AESUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,8 +37,15 @@ public class DiaryServiceImpl implements DiaryService {
 
         String imageUrl = extractImageUrl(imageResult);
 
-        Diary diary = Diary.from(content, emotion, member);
 
+        String encryptedContent;
+        try{
+            encryptedContent = AESUtil.encrypt(content);
+        }catch (Exception e){
+            log.error("일기내용 암호화 실패", e);
+            throw new RuntimeException("암호화 중 오류 발생");
+        }
+        Diary diary = Diary.from(encryptedContent, emotion, member);
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
             diary.setUrl(imageUrl);
@@ -81,7 +89,23 @@ public class DiaryServiceImpl implements DiaryService {
     public DiaryResponse getDiary(Long id) {
         Diary diary = diaryRepository.getByIdOrThrow(id);
 
-        return DiaryResponse.of(diary);
+        // 일기 내용을 복호화
+        String decryptedContent;
+        try {
+            decryptedContent = AESUtil.decrypt(diary.getContent());
+        } catch (Exception e) {
+            log.error("일기 내용 복호화 실패", e);
+            throw new RuntimeException("복호화 중 오류 발생");
+        }
+
+        // 복호화된 내용을 DiaryResponse에 전달
+        return new DiaryResponse(
+                diary.getId(),
+                decryptedContent, // 복호화된 내용
+                diary.getEmotionTag(),
+                diary.getImageUrl()
+        );
+
     }
 
     @Override

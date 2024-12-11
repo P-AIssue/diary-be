@@ -28,6 +28,12 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
+    // 멤버 이메일 가져오기
+    @Override
+    public Member getByUserName(String username) {
+        return memberRepository.getByUsernameOrThrow(username);
+    }
+
     // 멤버 아이디 가져오기
     @Override
     public MemberInfoDTO getMemberById(Long id) {

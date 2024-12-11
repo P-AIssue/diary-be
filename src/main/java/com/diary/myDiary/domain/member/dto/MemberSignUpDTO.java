@@ -10,8 +10,9 @@ import org.hibernate.validator.constraints.Range;
 
 public record MemberSignUpDTO(
 
-        @NotBlank(message = "아이디를 입력해주세요")
-        @Size(min = 7, max = 25, message = "아이디는 7~25자 내외로 입력해주세요")
+        @NotBlank(message = "이메일을 입력해주세요")
+        @Size(min = 7, max = 25, message = "이메일은 7자 이상, 25자 이하여야 합니다")
+        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "유효한 이메일 형식이 아닙니다")
         String username,
 
         @NotBlank(message = "비밀번호를 입력해주세요")

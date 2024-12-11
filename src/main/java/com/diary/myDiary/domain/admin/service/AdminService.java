@@ -1,25 +1,23 @@
 package com.diary.myDiary.domain.admin.service;
 
-import com.diary.myDiary.domain.diary.entity.Diary;
-import com.diary.myDiary.domain.member.entity.Member;
-import com.diary.myDiary.domain.notification.entity.Notification;
-import org.springframework.stereotype.Service;
+import com.diary.myDiary.domain.member.dto.MemberInfoDTO;
 
 import java.util.List;
 
-@Service
 public interface AdminService {
-    // 전체 멤버 리스트
-    List<Member> getAllMembers();
+    // 모든 멤버 조회
+    List<MemberInfoDTO> getAllMembers();
 
-    // 특정 멤버의 일기 리스트
-    List<Diary> getMemberDiaries(Long memberId);
+    // 특정 멤버 조회
+    MemberInfoDTO getMemberById(Long id);
 
-    // 특정 멤버의 알림 리스트
-    List<Notification> getMemberNotifications(Long memberId);
+    // 멤버 수정
+    void updateMember(Long id, MemberInfoDTO memberDto);
 
-    // 특정 일기의 상세 내용
-    Diary getDiaryDetails(Long diaryId);
+    // 멤버 삭제
+    void deleteMember(Long id);
+
 }
+
 
 

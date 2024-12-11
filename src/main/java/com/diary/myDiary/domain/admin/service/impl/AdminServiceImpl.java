@@ -38,7 +38,7 @@ public class AdminServiceImpl implements AdminService {
         Member member = memberRepository.findByMemberIdOrThrow(id);
 
         // 업데이트 로직
-        member.updateNickName(memberDto.getNickName());
+        member.updateNickName(memberDto.getNickname());
         memberRepository.save(member);
     }
 

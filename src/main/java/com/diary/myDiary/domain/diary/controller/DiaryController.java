@@ -53,7 +53,7 @@ public class DiaryController {
      */
     @GetMapping
     @Operation(summary = "일기 목록 조회", description = "일기 목록을 조회합니다.")
-    public ResponseEntity<?> getDiaryList(Pageable pageable) {
-        return ResponseEntity.ok(diaryService.getDiaryList(pageable));
+    public ResponseEntity<?> getDiaryList(Pageable pageable, int year, int month) {
+        return ResponseEntity.ok(diaryService.getDiaryList(year, month, pageable));
     }
 }

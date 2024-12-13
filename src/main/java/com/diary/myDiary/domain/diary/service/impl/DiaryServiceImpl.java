@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -39,9 +40,9 @@ public class DiaryServiceImpl implements DiaryService {
 
 
         String encryptedContent;
-        try{
+        try {
             encryptedContent = AESUtil.encrypt(content);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("일기내용 암호화 실패", e);
             throw new RuntimeException("암호화 중 오류 발생");
         }
@@ -78,7 +79,6 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
 
-
     @Override
     public void remove(Long id) {
         Diary diary = diaryRepository.getByIdOrThrow(id);
@@ -109,10 +109,19 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public List<DiaryResponse> getDiaryList(Pageable pageable) {
-        Page<Diary> diaryPage = diaryRepository.findAll(pageable);
+    public List<DiaryResponse> getDiaryList(int year, int month, Pageable pageable) {
+        // 해당 year와 month에 맞는 생성 날짜 필터링
+        LocalDateTime startDateTime = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endDateTime = startDateTime.withDayOfMonth(startDateTime.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59);
+
+        // Repository에서 BaseTimeEntity의 createdDate로 필터링된 데이터 가져오기
+        Page<Diary> diaryPage = diaryRepository.findByCreatedDateBetween(startDateTime, endDateTime, pageable);
+
+        // 필터링된 일기 목록들 내용 가져오기
         List<Diary> diaries = diaryPage.getContent();
 
+        // emotionTag 포함
+        // Diaries를 DiaryResponse로 변환하여 반환
         return DiaryResponse.listOf(diaries);
     }
 }

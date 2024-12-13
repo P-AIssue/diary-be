@@ -4,12 +4,14 @@ import com.diary.myDiary.domain.notification.entity.Notification;
 import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Slf4j
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -74,6 +76,7 @@ public class Member extends BaseTimeEntity {
 
     //== 토큰 관련 ==//
     public void updateRefreshToken(String refreshToken) {
+        log.info("refreshToken 넘어오기는 허냐?: {}", refreshToken);
         this.refreshToken = refreshToken;
     }
 

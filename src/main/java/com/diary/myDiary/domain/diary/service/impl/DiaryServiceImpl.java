@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,6 @@ public class DiaryServiceImpl implements DiaryService {
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
             diary.setUrl(imageUrl);
-            diaryRepository.save(diary);
         } else {
             log.error("이미지 생성에 실패하였습니다. 일기 ID: " + diary.getId());
         }
@@ -101,27 +101,23 @@ public class DiaryServiceImpl implements DiaryService {
         // 복호화된 내용을 DiaryResponse에 전달
         return new DiaryResponse(
                 diary.getId(),
-                decryptedContent, // 복호화된 내용
+                decryptedContent,
                 diary.getEmotionTag(),
-                diary.getImageUrl()
+                diary.getImageUrl(),
+                diary.getCreatedDate()
         );
 
     }
 
     @Override
     public List<DiaryResponse> getDiaryList(int year, int month, Pageable pageable) {
-        // 해당 year와 month에 맞는 생성 날짜 필터링
-        LocalDateTime startDateTime = LocalDateTime.of(year, month, 1, 0, 0);
-        LocalDateTime endDateTime = startDateTime.withDayOfMonth(startDateTime.toLocalDate().lengthOfMonth()).withHour(23).withMinute(59).withSecond(59);
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
-        // Repository에서 BaseTimeEntity의 createdDate로 필터링된 데이터 가져오기
-        Page<Diary> diaryPage = diaryRepository.findByCreatedDateBetween(startDateTime, endDateTime, pageable);
+        Page<Diary> diaryPage = diaryRepository.findByCreatedDateBetween(startDate, endDate, pageable);
 
-        // 필터링된 일기 목록들 내용 가져오기
         List<Diary> diaries = diaryPage.getContent();
 
-        // emotionTag 포함
-        // Diaries를 DiaryResponse로 변환하여 반환
         return DiaryResponse.listOf(diaries);
     }
 }

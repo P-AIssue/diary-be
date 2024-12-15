@@ -51,9 +51,9 @@ public class DiaryController {
     /**
      * 일기목록조회
      */
-    @GetMapping
+    @GetMapping("/{year}/{month}")
     @Operation(summary = "일기 목록 조회", description = "일기 목록을 조회합니다.")
-    public ResponseEntity<?> getDiaryList(Pageable pageable, int year, int month) {
+    public ResponseEntity<?> getDiaryList(Pageable pageable, @PathVariable int year, @PathVariable int month) {
         return ResponseEntity.ok(diaryService.getDiaryList(year, month, pageable));
     }
 }

@@ -183,15 +183,9 @@ public class ChatGPTServiceImpl implements ChatGPTService {
 
         HttpHeaders headers = chatGPTConfig.httpHeaders();
 
-        // 최신 이미지 생성 API 엔드포인트 (예: DALL·E 3)
+        // 최신 이미지 DALL-E-3 한 번 요청할 때마다 100원 ㅁㅊ 개비쌈
         String latestImageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
 
-        // 프롬프트 개선
-        // 목표: 보는 사람으로 하여금 즉각적인 미소와 즐거움을 주는 고품질의 아트웍
-        // 스튜디오 지브리 풍의 따뜻한 애니메이션 스타일 강조
-        // 아기자기한 디테일 포함: 작은 마을 풍경, 예쁜 꽃밭, 나비, 환하게 빛나는 하늘
-        // 색감: 밝은 파스텔 그라데이션 + 따뜻한 주황빛 섞기
-        // 전반적인 느낌: 동화책 삽화 같고, 애니메이션 포스터처럼 깔끔한 마감
         String improvedPrompt =
                 "당신은 뛰어난 일러스트레이터로서, 아래 일기 내용을 바탕으로 " +
                         "보는 사람 모두를 미소 짓게 할 정도로 사랑스럽고 아기자기한 애니메이션풍 일러스트를 그려주세요.\n\n" +
@@ -251,13 +245,19 @@ public class ChatGPTServiceImpl implements ChatGPTService {
 
         HttpHeaders headers = chatGPTConfig.httpHeaders();
 
+        String prompt = "아래의 텍스트를 바탕으로 감정을 분석한 뒤, 해당 감정 상태에 어울리는 간단하고 실용적인 활동이나 콘텐츠를 추천해 주세요.\n\n" +
+                "감정 범주: 행복, 사랑, 감사, 안도, 무난, 슬픔, 실망, 피곤, 화남 등 복합적 가능.\n" +
+                "1단계: 텍스트에 담긴 감정을 파악하고, 핵심 단어를 정리한 뒤 1~2문장 정도로 감정 상태를 요약.\n" +
+                "2단계: 해당 감정 상태에 어울리는 행동/콘텐츠(예: 짧은 운동, 음악 추천, 친구와 연락, 힐링되는 동영상, 명상 앱 추천 등)를 2~3가지 제안.\n\n" +
+                "응답 형식:\n" +
+                "감정 분석:\n[분석결과]\n\n" +
+                "추천 콘텐츠:\n[콘텐츠 제안]\n\n" +
+                "분석 대상 텍스트: \"" + decryptedContent + "\"";
+
         List<Map<String, String>> messages = List.of(
                 Map.of(
                         "role", "user",
-                        "content", "아래의 텍스트를 읽고 그 내포된 감정을 분석해 주세요. " +
-                                "감정은 행복, 사랑, 감사, 안도, 무난, 슬픔, 실망, 피곤, 화남 중 하나나 복합적으로 나타날 수 있습니다. " +
-                                "전반적인 감정 상태를 핵심 단어와 짧은 문장으로 명확하게 표현해 주시기 바랍니다.\n\n" +
-                                "분석 대상 텍스트: \"" + decryptedContent + "\""
+                        "content", prompt
                 )
         );
 
@@ -279,10 +279,10 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
                 String content = (String) message.get("content");
 
-                String notificationMessage = "감정분석이 완료되었습니다.";
+                String notificationMessage = "감정분석 및 추천 콘텐츠 제안이 완료되었습니다.";
                 notificationService.sendNotification(memberId, notificationMessage);
 
-                // content만 담은 Map 반환
+                // 분석 결과와 추천 콘텐츠를 포함한 content만 반환
                 return Map.of("content", content.trim());
             }
 

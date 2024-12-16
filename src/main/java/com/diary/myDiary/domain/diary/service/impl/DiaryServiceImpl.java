@@ -6,8 +6,11 @@ import com.diary.myDiary.domain.diary.repository.DiaryRepository;
 import com.diary.myDiary.domain.diary.service.DiaryService;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import com.diary.myDiary.domain.member.entity.Member;
+import com.diary.myDiary.domain.member.exception.MemberException;
 import com.diary.myDiary.domain.member.repository.MemberRepository;
 import com.diary.myDiary.global.auth.security.SecurityUtil;
+import com.diary.myDiary.global.auth.service.JwtService;
+import com.diary.myDiary.global.exception.ErrorCode;
 import com.diary.myDiary.global.util.AESUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class DiaryServiceImpl implements DiaryService {
     private final DiaryRepository diaryRepository;
     private final MemberRepository memberRepository;
     private final ChatGPTService chatGPTService;
+    private final JwtService jwtService;
 
     @Override
     public DiaryResponse create(String content, String emotion) {
@@ -77,8 +82,6 @@ public class DiaryServiceImpl implements DiaryService {
         return null;
     }
 
-
-
     @Override
     public void remove(Long id) {
         Diary diary = diaryRepository.getByIdOrThrow(id);
@@ -109,8 +112,14 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public List<DiaryResponse> getDiaryList(Pageable pageable) {
-        Page<Diary> diaryPage = diaryRepository.findAll(pageable);
+    public List<DiaryResponse> getDiaryList(String token, Pageable pageable) {
+        String username = jwtService.extractUsername(token)
+                .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_ACCESS_TOKEN));
+
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new MemberException(ErrorCode.NOT_FOUND_MEMBER));
+
+        Page<Diary> diaryPage = diaryRepository.findAllByMember(member, pageable);
         List<Diary> diaries = diaryPage.getContent();
 
         return DiaryResponse.listOf(diaries);

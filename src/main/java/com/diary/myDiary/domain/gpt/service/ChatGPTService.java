@@ -28,7 +28,7 @@ public interface ChatGPTService {
     /**
      * 일기 내용을 기반으로 감정 분석
      */
-    Map<String, Object> analyzeEmotion(Long diaryId);
+    Map<String, String> analyzeEmotion(Long diaryId);
 
 //    /**
 //     * 감정 분석이 완료되면 알림 생성

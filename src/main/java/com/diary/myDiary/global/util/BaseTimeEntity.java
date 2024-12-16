@@ -7,6 +7,8 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -15,8 +17,8 @@ import java.time.LocalDateTime;
 public class BaseTimeEntity {
 
     @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdDate;
+    @Column(updatable = false, nullable = false)
+    private LocalDate createdDate;
 
     @LastModifiedDate
     @Column(updatable = true)

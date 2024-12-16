@@ -12,7 +12,9 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @Builder
-@Table(name = "DIARY")
+@Table(
+        name = "DIARY",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"created_date", "member_id"})})
 public class Diary extends BaseTimeEntity {
 
     @Id

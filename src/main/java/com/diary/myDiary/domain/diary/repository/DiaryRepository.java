@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
@@ -20,4 +22,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     // 해당 멤버의 일기들 가져오기
     List<Diary> findByMemberId(Long memberId);
+
+    // 받아온 년, 월 값의 해당하는 일기들 조회
+    Page<Diary> findByCreatedDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

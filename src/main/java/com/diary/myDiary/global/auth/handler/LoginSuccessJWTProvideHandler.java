@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -21,6 +22,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
+    @Transactional
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -37,6 +39,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         log.info("로그인에 성공합니다. username: {}", username);
         log.info("AccessToken을 발급합니다. AccessToken: {}", accessToken);
         log.info("RefreshToken을 발급합니다. RefreshToken: {}", refreshToken);
+
     }
 
     private String extractUsername(Authentication authentication) {

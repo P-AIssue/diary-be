@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,9 +46,9 @@ public class DiaryServiceImpl implements DiaryService {
 
 
         String encryptedContent;
-        try{
+        try {
             encryptedContent = AESUtil.encrypt(content);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("일기내용 암호화 실패", e);
             throw new RuntimeException("암호화 중 오류 발생");
         }
@@ -54,7 +56,6 @@ public class DiaryServiceImpl implements DiaryService {
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
             diary.setUrl(imageUrl);
-            diaryRepository.save(diary);
         } else {
             log.error("이미지 생성에 실패하였습니다. 일기 ID: " + diary.getId());
         }
@@ -104,9 +105,10 @@ public class DiaryServiceImpl implements DiaryService {
         // 복호화된 내용을 DiaryResponse에 전달
         return new DiaryResponse(
                 diary.getId(),
-                decryptedContent, // 복호화된 내용
+                decryptedContent,
                 diary.getEmotionTag(),
-                diary.getImageUrl()
+                diary.getImageUrl(),
+                diary.getCreatedDate()
         );
 
     }

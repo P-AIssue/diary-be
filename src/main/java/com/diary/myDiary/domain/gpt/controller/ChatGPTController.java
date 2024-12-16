@@ -79,11 +79,11 @@ public class ChatGPTController {
      */
     @PostMapping("/analyzeEmotion")
     @Operation(summary = "감정 분석", description = "일기 내용을 기반으로 감정을 분석합니다.")
-    public ResponseVO<Map<String, Object>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
+    public ResponseVO<Map<String, String>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
 
         Long diaryId = emotionRequest.diaryId();
 
-        Map<String, Object> result = chatGPTService.analyzeEmotion(diaryId);
+        Map<String, String> result = chatGPTService.analyzeEmotion(diaryId);
         return new ResponseVO<>(result);
     }
 

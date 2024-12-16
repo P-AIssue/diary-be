@@ -6,6 +6,7 @@ import com.diary.myDiary.domain.gpt.config.ChatGPTConfig;
 import com.diary.myDiary.domain.gpt.dto.*;
 import com.diary.myDiary.domain.gpt.service.ChatGPTService;
 import com.diary.myDiary.domain.notification.repository.NotificationRepository;
+import com.diary.myDiary.global.util.AESUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -180,85 +181,117 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     public Map<String, Object> generateImageFromDiary(String diaryContent) {
         log.debug("[+] 일기 내용을 기반으로 이미지를 생성합니다.");
 
-        // 헤더 설정
         HttpHeaders headers = chatGPTConfig.httpHeaders();
 
-        // 이미지 생성 API 엔드포인트
-        String imageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
+        // 최신 이미지 생성 API 엔드포인트 (예: DALL·E 3)
+        String latestImageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
 
-        // 메시지 구성
-        List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of(
-                "role", "user",
-                "content", "다음 내용을 기반으로 : \"" + diaryContent + "\"\n파스텔 톤으로 그림 생성해줘"
-        ));
+        // 프롬프트 개선
+        // 목표: 보는 사람으로 하여금 즉각적인 미소와 즐거움을 주는 고품질의 아트웍
+        // 스튜디오 지브리 풍의 따뜻한 애니메이션 스타일 강조
+        // 아기자기한 디테일 포함: 작은 마을 풍경, 예쁜 꽃밭, 나비, 환하게 빛나는 하늘
+        // 색감: 밝은 파스텔 그라데이션 + 따뜻한 주황빛 섞기
+        // 전반적인 느낌: 동화책 삽화 같고, 애니메이션 포스터처럼 깔끔한 마감
+        String improvedPrompt =
+                "당신은 뛰어난 일러스트레이터로서, 아래 일기 내용을 바탕으로 " +
+                        "보는 사람 모두를 미소 짓게 할 정도로 사랑스럽고 아기자기한 애니메이션풍 일러스트를 그려주세요.\n\n" +
+                        "스타일 가이드:\n" +
+                        "1. 스튜디오 지브리 풍: 부드럽고 따뜻한 색감, 따사로운 햇살이 어린 듯한 분위기.\n" +
+                        "2. 장면: 평화로운 작은 마을 풍경. 작은 꽃밭, 알록달록한 꽃들 사이로 나비가 날아다니고, " +
+                        "작은 버섯집들이 여기저기 흩어져 있으며, 부드러운 곡선으로 표현된 나무들이 서 있는 모습.\n" +
+                        "3. 색감: 밝은 파스텔 그라데이션을 메인으로 하되, 따뜻한 주황빛, 연한 연두색, 하늘색을 섞어 " +
+                        "전체적으로 화사하고 기분 좋은 분위기.\n" +
+                        "4. 질감: 수채화 느낌으로 부드럽고 자연스럽게 번진 색감, 디지털 일러스트지만 " +
+                        "붓터치가 느껴지는 듯한 자연스러운 마감.\n" +
+                        "5. 전체적인 느낌: 동화책 삽화처럼 아기자기하고 따뜻한 장면. " +
+                        "사진처럼 사실적이지 않고, 명확히 그림으로 인식될 수 있는 깔끔한 마감.\n\n" +
+                        "참고 일기 내용: \"" + diaryContent + "\"\n" +
+                        "이 장면을 자유롭게 해석하고 확장하여, " +
+                        "일기에서 느껴지는 감정과 분위기를 이 아름다운 일러스트 장면에 녹여주세요.";
 
-        // 이미지 생성 요청 DTO 생성
         ImageGenerationRequestDTO requestDto = ImageGenerationRequestDTO.builder()
-                .prompt(diaryContent)
-                .n(1) // 생성할 이미지 수
-                .size("1024x1024") // 이미지 크기
+                .model("dall-e-3")
+                .prompt(improvedPrompt)
+                .n(1)
+                .size("1024x1024")
                 .build();
 
-        // 요청 엔티티 생성
         HttpEntity<ImageGenerationRequestDTO> requestEntity = new HttpEntity<>(requestDto, headers);
 
-        // API 호출
         ResponseEntity<String> response = chatGPTConfig
                 .restTemplate()
-                .exchange(imageGenerationUrl, HttpMethod.POST, requestEntity, String.class);
+                .exchange(latestImageGenerationUrl, HttpMethod.POST, requestEntity, String.class);
 
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            // 응답을 Map으로 변환
             resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException :: " + e.getMessage());
         } catch (RuntimeException e) {
             log.error("RuntimeException :: " + e.getMessage());
         }
+
         return resultMap;
     }
 
-    @Override
-    public Map<String, Object> analyzeEmotion(Long diaryId) {
 
+    @Override
+    public Map<String, String> analyzeEmotion(Long diaryId) {
         Diary diary = diaryRepository.getByIdOrThrow(diaryId);
-        String diaryContent = diary.getContent();
+        String encryptedContent = diary.getContent();
         Long memberId = diary.getMember().getId();
 
+        String decryptedContent;
+        try {
+            decryptedContent = AESUtil.decrypt(encryptedContent);
+        } catch (Exception e) {
+            log.error("일기 내용 복호화 실패", e);
+            throw new RuntimeException("복호화 중 오류 발생");
+        }
 
         HttpHeaders headers = chatGPTConfig.httpHeaders();
 
-        // 메시지 구성
-        List<Map<String, String>> messages = new ArrayList<>();
-        messages.add(Map.of(
-                "role", "user",
-                "content", "다음 텍스트의 감정을 분석해 주세요: \"" + diaryContent + "\"\n감정 상태를 한 줄로 표현해 주세요."
-        ));
+        List<Map<String, String>> messages = List.of(
+                Map.of(
+                        "role", "user",
+                        "content", "아래의 텍스트를 읽고 그 내포된 감정을 분석해 주세요. " +
+                                "감정은 행복, 사랑, 감사, 안도, 무난, 슬픔, 실망, 피곤, 화남 중 하나나 복합적으로 나타날 수 있습니다. " +
+                                "전반적인 감정 상태를 핵심 단어와 짧은 문장으로 명확하게 표현해 주시기 바랍니다.\n\n" +
+                                "분석 대상 텍스트: \"" + decryptedContent + "\""
+                )
+        );
 
-        EmotionAnalyzeDTO emotionAnalyzeDto = EmotionAnalyzeDTO.builder()
-                .messages(messages)
-                .build();
+        // 요청 DTO
+        EmotionAnalyzeDTO emotionAnalyzeDto = new EmotionAnalyzeDTO("gpt-4", messages);
 
         HttpEntity<EmotionAnalyzeDTO> requestEntity = new HttpEntity<>(emotionAnalyzeDto, headers);
 
         ResponseEntity<String> response = chatGPTConfig
-                .restTemplate() 
+                .restTemplate()
                 .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
 
-        Map<String, Object> resultMap = new HashMap<>();
         try {
-            resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+            Map<String, Object> resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) resultMap.get("choices");
 
-            // 알림 생성
-            String message = "감정분석이 완료되었습니다.";
-            notificationService.sendNotification(memberId, message);
+            if (choices != null && !choices.isEmpty()) {
+                Map<String, Object> firstChoice = choices.get(0);
+                Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
+                String content = (String) message.get("content");
+
+                String notificationMessage = "감정분석이 완료되었습니다.";
+                notificationService.sendNotification(memberId, notificationMessage);
+
+                // content만 담은 Map 반환
+                return Map.of("content", content.trim());
+            }
 
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException :: " + e.getMessage());
         }
-        return resultMap; // 분석 결과 반환
+
+        // 실패 시 빈 content 반환
+        return Map.of("content", "");
     }
 
 }

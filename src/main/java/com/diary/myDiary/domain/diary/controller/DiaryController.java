@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "일기", description = "일기 관련 API")
 @RestController
 @RequestMapping("/diary")
@@ -54,7 +56,12 @@ public class DiaryController {
      */
     @GetMapping
     @Operation(summary = "일기 목록 조회", description = "일기 목록을 조회합니다.")
-    public ResponseEntity<?> getDiaryList(HttpServletRequest request, Pageable pageable) {
-        return ResponseEntity.ok(diaryService.getDiaryList(request.getHeader("Authorization"), pageable));
+    public ResponseEntity<?> getDiaryList(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer year
+    ) {
+        return ResponseEntity.ok(diaryService.getDiaryList(request, PageRequest.of(page, size), year));
     }
 }

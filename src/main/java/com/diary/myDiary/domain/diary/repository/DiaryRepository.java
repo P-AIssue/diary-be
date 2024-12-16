@@ -7,6 +7,8 @@ import com.diary.myDiary.global.exception.ErrorCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -16,7 +18,12 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
         return findById(id).orElseThrow(() -> new DiaryException(ErrorCode.NOT_FOUND_DIARY));
     }
 
-    Page<Diary> findAllByMember(Member member, Pageable pageable);
+    @Query("SELECT d FROM Diary d WHERE d.member = :member AND YEAR(d.createdDate) = :year")
+    Page<Diary> findAllByMemberAndDate(
+            @Param("member") Member member,
+            @Param("year") int year,
+            Pageable pageable
+    );
 
     // 해당 멤버의 일기들 가져오기
     List<Diary> findByMemberId(Long memberId);

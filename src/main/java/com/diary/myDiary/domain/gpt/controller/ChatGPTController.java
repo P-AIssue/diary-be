@@ -68,9 +68,10 @@ public class ChatGPTController {
      */
     @PostMapping("/generateImage")
     @Operation(summary = "이미지 생성", description = "일기 내용을 기반으로 이미지를 생성합니다.")
-    public ResponseVO<Map<String, Object>> generateImage(@RequestBody String diaryContent) {
+    public ResponseVO<Map<String, Object>> generateImage(@RequestBody String diaryContent, String emotionTag) {
         log.debug("Diary content :: " + diaryContent);
-        Map<String, Object> result = chatGPTService.generateImageFromDiary(diaryContent);
+        log.debug("Emotion tag :: " + emotionTag);
+        Map<String, Object> result = chatGPTService.generateImageFromDiary(diaryContent, emotionTag);
         return new ResponseVO<>(result);
     }
 
@@ -78,13 +79,9 @@ public class ChatGPTController {
      * 일기 내용을 기반으로 감정 분석
      */
     @PostMapping("/analyzeEmotion")
-    @Operation(summary = "감정 분석", description = "일기 내용을 기반으로 감정을 분석합니다.")
-    public ResponseVO<Map<String, String>> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
-
+    public Map<String, String> analyzeEmotion(@RequestBody AnalyzeEmotionRequest emotionRequest) {
         Long diaryId = emotionRequest.diaryId();
-
-        Map<String, String> result = chatGPTService.analyzeEmotion(diaryId);
-        return new ResponseVO<>(result);
+        return chatGPTService.analyzeEmotion(diaryId);
     }
 
 //    /**

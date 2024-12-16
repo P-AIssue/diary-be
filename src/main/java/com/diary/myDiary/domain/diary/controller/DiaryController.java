@@ -5,6 +5,7 @@ import com.diary.myDiary.domain.diary.dto.DiaryResponse;
 import com.diary.myDiary.domain.diary.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -53,7 +54,7 @@ public class DiaryController {
      */
     @GetMapping
     @Operation(summary = "일기 목록 조회", description = "일기 목록을 조회합니다.")
-    public ResponseEntity<?> getDiaryList(Pageable pageable, int year, int month) {
-        return ResponseEntity.ok(diaryService.getDiaryList(year, month, pageable));
+    public ResponseEntity<?> getDiaryList(HttpServletRequest request, Pageable pageable) {
+        return ResponseEntity.ok(diaryService.getDiaryList(request.getHeader("Authorization"), pageable));
     }
 }

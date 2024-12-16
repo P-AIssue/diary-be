@@ -13,5 +13,5 @@ public interface DiaryService {
 
     DiaryResponse getDiary(Long id);
 
-    List<DiaryResponse> getDiaryList(int year, int month, Pageable pageable);
+    List<DiaryResponse> getDiaryList(String token, Pageable pageable);
 }

@@ -1,12 +1,16 @@
 package com.diary.myDiary.domain.admin.service;
 
 import com.diary.myDiary.domain.member.dto.MemberInfoDTO;
+import com.diary.myDiary.domain.member.entity.Member;
 
 import java.util.List;
 
 public interface AdminService {
     // 모든 멤버 조회
     List<MemberInfoDTO> getAllMembers();
+
+    // Login
+    Member getByUserName(String username);
 
     // 특정 멤버 조회
     MemberInfoDTO getMemberById(Long id);

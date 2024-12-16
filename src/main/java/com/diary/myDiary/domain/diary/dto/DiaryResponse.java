@@ -2,8 +2,6 @@ package com.diary.myDiary.domain.diary.dto;
 
 import com.diary.myDiary.domain.diary.entity.Diary;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,18 +9,10 @@ public record DiaryResponse(
         Long id,
         String content,
         String emotionTag,
-        String imageUrl,
-        String createdDate
+        String imageUrl
 ) {
     public static DiaryResponse of(Diary diary) {
-        String formattedDate = formatCreatedDate(diary.getCreatedDate());
-        return new DiaryResponse(
-                diary.getId(),
-                diary.getContent(),
-                diary.getEmotionTag(),
-                diary.getImageUrl(),
-                formattedDate
-        );
+        return new DiaryResponse(diary.getId(), diary.getContent(), diary.getEmotionTag(), diary.getImageUrl());
     }
 
     public static List<DiaryResponse> listOf(List<Diary> diaries) {
@@ -31,7 +21,7 @@ public record DiaryResponse(
                 .collect(Collectors.toList());
     }
 
-    public static String formatCreatedDate(LocalDateTime createdAt) {
-        return createdAt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    public DiaryResponse(String content) {
+        this(null, content, null, null);
     }
 }

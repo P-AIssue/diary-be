@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -85,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/notification/**").permitAll()
                         .requestMatchers("/diary/**").permitAll()
                         .requestMatchers("/api/v1/chatGpt/**").permitAll()
-
+                        .requestMatchers("/admin/**").permitAll()
                         .requestMatchers("/access-denied/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()

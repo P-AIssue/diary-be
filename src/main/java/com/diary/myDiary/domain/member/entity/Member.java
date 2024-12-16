@@ -4,12 +4,14 @@ import com.diary.myDiary.domain.notification.entity.Notification;
 import com.diary.myDiary.global.util.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Slf4j
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -61,6 +63,12 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickName;
     }
 
+    public void updateName(String name) {this.name = name;}
+
+    public void updateUsername(String username) {this.username = username;}
+
+    public void updateAge(Integer age) {this.age = age;}
+
     //== 패스워드 암호화 ==//
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
@@ -68,6 +76,7 @@ public class Member extends BaseTimeEntity {
 
     //== 토큰 관련 ==//
     public void updateRefreshToken(String refreshToken) {
+        log.info("refreshToken 넘어오기는 허냐?: {}", refreshToken);
         this.refreshToken = refreshToken;
     }
 
@@ -84,4 +93,6 @@ public class Member extends BaseTimeEntity {
     public void addUserAuthority() {
         this.role = Role.USER;
     }
+
+
 }

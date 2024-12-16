@@ -20,6 +20,7 @@ public enum ErrorCode {
     /* 공용 */
     NOT_FOUND_ACCESS_TOKEN(00, "토큰을 찾을 수 없습니다."),
     EXPIRED_ACCESS_TOKEN(403, "토큰의 유효시간이 만료되었습니다."),
+    INVALID_ACCESS_TOKEN(00, "유효하지 않은 토큰입니다."),
     ACCESS_DENIED(00, "권한이 없습니다.");
 
     private final int errorCode;

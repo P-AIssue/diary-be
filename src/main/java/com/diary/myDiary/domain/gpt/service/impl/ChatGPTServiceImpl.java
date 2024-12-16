@@ -178,29 +178,29 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     }
 
     @Override
-    public Map<String, Object> generateImageFromDiary(String diaryContent) {
+    public Map<String, Object> generateImageFromDiary(String diaryContent, String emotionTag) {
         log.debug("[+] 일기 내용을 기반으로 이미지를 생성합니다.");
 
         HttpHeaders headers = chatGPTConfig.httpHeaders();
-
-        // 최신 이미지 DALL-E-3 한 번 요청할 때마다 100원 ㅁㅊ 개비쌈
         String latestImageGenerationUrl = chatGPTConfig.getImageGenerationUrl();
 
         String improvedPrompt =
-                "당신은 뛰어난 일러스트레이터로서, 아래 일기 내용을 바탕으로 " +
-                        "보는 사람 모두를 미소 짓게 할 정도로 사랑스럽고 아기자기한 애니메이션풍 일러스트를 그려주세요.\n\n" +
+                "당신은 뛰어난 일러스트레이터로서, 아래 일기 내용과 감정 상태를 바탕으로 " +
+                        "보는 사람 모두에게 인상적인 애니메이션풍 일러스트를 그려주세요.\n\n" +
+                        "감정 상태: \"" + emotionTag + "\"\n" +
+                        "이 감정 상태를 반영하여, 장면의 분위기나 색감을 적절히 조정해 주세요. " +
+                        "예를 들어, '슬픔'이라면 조금 차분하고 위로하는 느낌의 부드러운 색감과 구성을, " +
+                        "'행복'이라면 더욱 밝고 활기찬 색감을 사용할 수 있습니다.\n\n" +
                         "스타일 가이드:\n" +
-                        "1. 스튜디오 지브리 풍: 부드럽고 따뜻한 색감, 따사로운 햇살이 어린 듯한 분위기.\n" +
-                        "2. 장면: 평화로운 작은 마을 풍경. 작은 꽃밭, 알록달록한 꽃들 사이로 나비가 날아다니고, " +
-                        "작은 버섯집들이 여기저기 흩어져 있으며, 부드러운 곡선으로 표현된 나무들이 서 있는 모습.\n" +
-                        "3. 색감: 밝은 파스텔 그라데이션을 메인으로 하되, 따뜻한 주황빛, 연한 연두색, 하늘색을 섞어 " +
-                        "전체적으로 화사하고 기분 좋은 분위기.\n" +
-                        "4. 질감: 수채화 느낌으로 부드럽고 자연스럽게 번진 색감, 디지털 일러스트지만 " +
-                        "붓터치가 느껴지는 듯한 자연스러운 마감.\n" +
+                        "1. 스튜디오 지브리 풍: 부드럽고 따뜻한 색감, 감정 상태를 자연스럽게 녹여낸 평온한 분위기.\n" +
+                        "2. 장면: 작은 마을 풍경 속 꽃밭, 나비, 작은 버섯집, 곡선형 나무 등 아기자기한 디테일.\n" +
+                        "3. 색감: 밝은 파스텔 그라데이션을 기본으로 하되, '" + emotionTag + "' 감정에 어울리는 톤 추가. " +
+                        "   예) 슬픔: 조금 차분한 파스텔 블루톤이나 연한 보라톤을 일부 섞어 위로하는 느낌.\n" +
+                        "4. 질감: 수채화 느낌으로 번진 색감, 자연스러운 붓터치, 디지털 일러스트이지만 따뜻한 마감.\n" +
                         "5. 전체적인 느낌: 동화책 삽화처럼 아기자기하고 따뜻한 장면. " +
-                        "사진처럼 사실적이지 않고, 명확히 그림으로 인식될 수 있는 깔끔한 마감.\n\n" +
+                        "   '사진'같지 않고 명확히 '그림'으로 인식 가능한 깔끔한 마감.\n\n" +
                         "참고 일기 내용: \"" + diaryContent + "\"\n" +
-                        "이 장면을 자유롭게 해석하고 확장하여, " +
+                        "이 감정 상태('" + emotionTag + "')를 자연스럽게 반영하여, " +
                         "일기에서 느껴지는 감정과 분위기를 이 아름다운 일러스트 장면에 녹여주세요.";
 
         ImageGenerationRequestDTO requestDto = ImageGenerationRequestDTO.builder()
@@ -261,7 +261,6 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 )
         );
 
-        // 요청 DTO
         EmotionAnalyzeDTO emotionAnalyzeDto = new EmotionAnalyzeDTO("gpt-4", messages);
 
         HttpEntity<EmotionAnalyzeDTO> requestEntity = new HttpEntity<>(emotionAnalyzeDto, headers);
@@ -269,6 +268,9 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         ResponseEntity<String> response = chatGPTConfig
                 .restTemplate()
                 .exchange(promptUrl, HttpMethod.POST, requestEntity, String.class);
+
+        String analysis = "";
+        String recommendations = "";
 
         try {
             Map<String, Object> resultMap = objectMapper.readValue(response.getBody(), new TypeReference<>() {});
@@ -279,19 +281,30 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
                 String content = (String) message.get("content");
 
+                // 감정 분석과 추천 콘텐츠 추출 로직
+                int analysisIndex = content.indexOf("감정 분석:");
+                int recommendIndex = content.indexOf("추천 콘텐츠:");
+
+                if (analysisIndex != -1 && recommendIndex != -1) {
+                    analysis = content.substring(analysisIndex + "감정 분석:".length(), recommendIndex).trim();
+                    recommendations = content.substring(recommendIndex + "추천 콘텐츠:".length()).trim();
+                } else {
+                    // 포맷이 예상과 다르면 전체 content를 분석으로 처리하거나 빈값 처리
+                    analysis = content.trim();
+                    recommendations = "";
+                }
+
                 String notificationMessage = "감정분석 및 추천 콘텐츠 제안이 완료되었습니다.";
                 notificationService.sendNotification(memberId, notificationMessage);
-
-                // 분석 결과와 추천 콘텐츠를 포함한 content만 반환
-                return Map.of("content", content.trim());
             }
 
         } catch (JsonProcessingException e) {
             log.error("JsonProcessingException :: " + e.getMessage());
         }
 
-        // 실패 시 빈 content 반환
-        return Map.of("content", "");
+        return Map.of(
+                "analysis", analysis,
+                "recommendations", recommendations
+        );
     }
-
 }

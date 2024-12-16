@@ -37,10 +37,10 @@ public class DiaryServiceImpl implements DiaryService {
     private final JwtService jwtService;
 
     @Override
-    public DiaryResponse create(String content, String emotion) {
+    public DiaryResponse create(String content, String emotionTag) {
         Member member = memberRepository.getByUsernameOrThrow(SecurityUtil.getLoginUsername());
 
-        Map<String, Object> imageResult = chatGPTService.generateImageFromDiary(content);
+        Map<String, Object> imageResult = chatGPTService.generateImageFromDiary(content, emotionTag);
 
         String imageUrl = extractImageUrl(imageResult);
 
@@ -52,7 +52,7 @@ public class DiaryServiceImpl implements DiaryService {
             log.error("일기내용 암호화 실패", e);
             throw new RuntimeException("암호화 중 오류 발생");
         }
-        Diary diary = Diary.from(encryptedContent, emotion, member);
+        Diary diary = Diary.from(encryptedContent, emotionTag, member);
         // Diary 엔티티에 이미지 URL 설정
         if (imageUrl != null) {
             diary.setUrl(imageUrl);

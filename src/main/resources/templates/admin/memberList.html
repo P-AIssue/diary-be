@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="common/header :: header">
+<head th:replace="~{common/header :: header}">
     <!-- 부트스트랩 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -9,35 +9,39 @@
     <h1 class="text-center mb-4">마음의 그림</h1>
     <h2 class="text-center mb-5">메인 화면</h2>
 
+    <!-- 멤버 조회 섹션 -->
     <div class="mb-4">
         <select class="form-select">
             <option>사용자 정보 조회</option>
         </select>
     </div>
 
+    <!-- 멤버 테이블 -->
     <table class="table table-striped">
         <thead>
         <tr>
             <th>사용자명</th>
             <th>Email</th>
-            <th>Password</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Actions</th>
+            <th>닉네임</th>
+            <th>나이</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${members}">
-            <td th:text="${members.name}">홍길동</td>
-            <td th:text="${members.email}">example@example.com</td>
-            <td th:text="${members.password}">******</td>
-            <td th:text="${members.age}">24</td>
-            <td th:text="${members.gender}">Female</td>
+        <!-- 멤버 데이터 렌더링 -->
+        <tr th:each="member : ${members}">
+            <td th:text="${member.name}">사용자명</td>
+            <td th:text="${member.username}">이메일</td>
+            <td th:text="${member.nickname}">닉네임</td>
+            <td th:text="${member.age}">나이</td>
             <td>
+                <!-- 수정 및 삭제 버튼 -->
                 <div class="d-flex gap-2">
-                    <a th:href="@{/admin/updateMember/{id}(id=${members.id})}" class="btn btn-sm btn-warning">수정</a>
-                    <form th:action="@{/admin/deleteMember/{id}(id=${members.id})}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                    <a th:href="@{/admin/members/{id}(id=${member.id})}"
+                       class="btn btn-sm">수정</a>
+                    <form th:action="@{/admin/delete/{id}(id=${member.id})}"
+                          method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm"
+                                onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
                     </form>
                 </div>
             </td>
@@ -49,5 +53,5 @@
 <script src="/static/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<footer th:replace="common/footer :: footer"></footer>
+<footer th:replace="~{common/footer :: footer}"></footer>
 </html>

@@ -1,22 +1,21 @@
 package com.diary.myDiary.domain.admin.service;
 
-import com.diary.myDiary.domain.member.dto.MemberInfoDTO;
 import com.diary.myDiary.domain.member.entity.Member;
 
 import java.util.List;
 
 public interface AdminService {
     // 모든 멤버 조회
-    List<MemberInfoDTO> getAllMembers();
+    List<Member> getAllMembers();
 
     // Login
     Member getByUserName(String username);
 
     // 특정 멤버 조회
-    MemberInfoDTO getMemberById(Long id);
+    Member getMemberById(Long id);
 
     // 멤버 수정
-    void updateMember(Long id, MemberInfoDTO memberDto);
+    void updateMember(Long id, Member member);
 
     // 멤버 삭제
     void deleteMember(Long id);
